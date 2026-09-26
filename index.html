@@ -1,0 +1,2508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+<title>Iron Ledger</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏋️</text></svg>">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="theme-color" content="#0a0a0a">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.7/babel.min.js"></script>
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #0a0a0a;
+  }
+  html, body { background: var(--bg); margin: 0; padding: 0; overscroll-behavior-y: none; }
+  #root { min-height: 100vh; }
+  * { -webkit-tap-highlight-color: transparent; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-thumb { background: #404040; border-radius: 3px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="react">
+
+const { useState, useEffect, useMemo, useRef } = React;
+
+function Icon({ symbol, size = 16, className, strokeWidth, ...rest }) {
+  return (
+    <span className={className} style={{ fontSize: size, lineHeight: 1, display: "inline-block" }} {...rest}>
+      {symbol}
+    </span>
+  );
+}
+const Dumbbell = (p) => <Icon symbol="🏋" {...p} />;
+const ListChecks = (p) => <Icon symbol="📋" {...p} />;
+const Library = (p) => <Icon symbol="📚" {...p} />;
+const History = (p) => <Icon symbol="🕐" {...p} />;
+const Plus = (p) => <Icon symbol="+" {...p} />;
+const X = (p) => <Icon symbol="✕" {...p} />;
+const ArrowLeftRight = (p) => <Icon symbol="⇄" {...p} />;
+const Trophy = (p) => <Icon symbol="🏆" {...p} />;
+const Clock = (p) => <Icon symbol="🕐" {...p} />;
+const ChevronRight = (p) => <Icon symbol="›" {...p} />;
+const ChevronDown = (p) => <Icon symbol="⌄" {...p} />;
+const ChevronUp = (p) => <Icon symbol="⌃" {...p} />;
+const Check = (p) => <Icon symbol="✓" {...p} />;
+const Search = (p) => <Icon symbol="🔍" {...p} />;
+const Trash2 = (p) => <Icon symbol="🗑" {...p} />;
+const Pencil = (p) => <Icon symbol="✏" {...p} />;
+const Save = (p) => <Icon symbol="💾" {...p} />;
+const Ban = (p) => <Icon symbol="🚫" {...p} />;
+const TableProperties = (p) => <Icon symbol="▦" {...p} />;
+const LineChartIcon = (p) => <Icon symbol="📈" {...p} />;
+const ListIcon = (p) => <Icon symbol="☰" {...p} />;
+
+const SEED_EXERCISES = [{"id": "e1", "name": "Reverse Hypers", "machine": "Bodyweight", "muscleGroup": "Legs", "defaultSets": "1-2", "defaultReps": "10-15", "refNote": "Warm-up, bodyweight", "seedPR": null, "archived": false, "alternateIds": ["e12", "emu8k4a5z8gwzw", "e34", "e38"]}, {"id": "e2", "name": "Deadlift", "machine": "Free Weights", "muscleGroup": "Legs", "defaultSets": "3", "defaultReps": "5 80%", "refNote": "Warm-up: 8x40%, 5x60%, 2x80%, opt 1x90%. Work: 3x5x80%. Baseline for warm-ups: 468 (4/1/26). PR435 (4/1/26)", "seedPR": 435.0, "archived": false, "alternateIds": ["e38", "e32", "e34", "e12", "emu8k4a5z8gwzw"], "warmupScheme": [{"pct": 40, "reps": 8}, {"pct": 60, "reps": 5}, {"pct": 80, "reps": 2}, {"pct": 90, "reps": 1, "optional": true}], "warmupBase": 468}, {"id": "e3", "name": "Barbell Front Squats", "machine": "Free Weights", "muscleGroup": "Legs", "defaultSets": "2-3", "defaultReps": "6-8, leaving 2-3 in the tank", "refNote": "185 (current working weight)", "seedPR": null, "archived": false, "alternateIds": ["e8", "e9", "e36", "e14", "e11", "e20"]}, {"id": "e4", "name": "Reverse Lunges", "machine": "Smith", "muscleGroup": "Legs", "defaultSets": "3", "defaultReps": "8-10", "refNote": "45 lbs plate per side + Smith machine bar weight", "seedPR": null, "archived": false, "alternateIds": ["e29", "e95", "e20", "e40", "e41"]}, {"id": "e5", "name": "Seated Leg Curl - One Leg", "machine": "Hammer strength", "muscleGroup": "Legs", "defaultSets": "3", "defaultReps": "10", "refNote": "125 lbs per leg", "seedPR": null, "archived": false, "alternateIds": ["e15", "alt5", "e31"]}, {"id": "e6", "name": "Standing Calf Raise Machine", "machine": "Machine", "muscleGroup": "Legs", "defaultSets": "2-3", "defaultReps": "10-12", "refNote": "90 kg (198 lbs)", "seedPR": null, "archived": false, "alternateIds": ["alt10", "e13", "e33"]}, {"id": "e7", "name": "Banded Overhead Squats", "machine": "Bands", "muscleGroup": "Legs", "defaultSets": "1-2", "defaultReps": "10-15", "refNote": "Warm-up, banded", "seedPR": null, "archived": false, "alternateIds": ["e11", "e21"]}, {"id": "e8", "name": "Barbell Squats", "machine": "Cage", "muscleGroup": "Legs", "defaultSets": "3", "defaultReps": "7", "refNote": "Baseline 435 (70%=135x2). Baseline for warm-ups: 188/side + 45 bar = 421 (3/21/26). Warm-up: 8x40%, 5x60%, 2x80%, opt 1x90%. Work: 3x7x70%. PR355 (4/25/26)", "seedPR": 355.0, "archived": false, "alternateIds": ["e9", "e36", "e3", "e14", "e11"], "warmupScheme": [{"pct": 40, "reps": 8}, {"pct": 60, "reps": 5}, {"pct": 80, "reps": 2}, {"pct": 90, "reps": 1, "optional": true}], "warmupBase": 421}, {"id": "e9", "name": "Squat (Smith Machine)", "machine": "Smith", "muscleGroup": "Legs", "defaultSets": "3", "defaultReps": "7", "refNote": "Baseline (100%): 185/side. Working weight ~70% = ~130/side", "seedPR": null, "archived": false, "alternateIds": ["e8", "e36", "e14", "e3"]}, {"id": "e10", "name": "Hip Thrust machine", "machine": "Machine", "muscleGroup": "Legs", "defaultSets": "3", "defaultReps": "10", "refNote": "185 lbs per side", "seedPR": null, "archived": false, "alternateIds": ["e94", "e32", "e12", "emu8k4a5z8gwzw", "e20"]}, {"id": "e11", "name": "Spanish Squats", "machine": "Bands + DB", "muscleGroup": "Legs", "defaultSets": "3", "defaultReps": "10", "refNote": "Band behind knees + two 65 lb dumbbells", "seedPR": null, "archived": false, "alternateIds": ["e30", "e14", "e36", "e20", "e41", "e3", "e8", "e7"]}, {"id": "e12", "name": "Back Extension", "machine": "Hammer strength", "muscleGroup": "Legs", "defaultSets": "3", "defaultReps": "12", "refNote": "+45 lbs", "seedPR": null, "archived": false, "alternateIds": ["emu8k4a5z8gwzw", "e1", "e10", "e32", "e2"]}, {"id": "e13", "name": "Seated Calf Raise", "machine": "Hammer strength", "muscleGroup": "Legs", "defaultSets": "3", "defaultReps": "10", "refNote": "135", "seedPR": null, "archived": false, "alternateIds": ["e33", "e6", "alt10"]}, {"id": "e14", "name": "Seated Leg Press", "machine": "Hammer strength", "muscleGroup": "Legs", "defaultSets": "3", "defaultReps": "12", "refNote": "140/590 High 590 Low", "seedPR": null, "archived": false, "alternateIds": ["alt4", "e36", "e11", "e3", "e8", "e9"]}, {"id": "e15", "name": "Kneeling Leg Curls", "machine": "Machine", "muscleGroup": "Legs", "defaultSets": "3", "defaultReps": "10", "refNote": "150", "seedPR": null, "archived": false, "alternateIds": ["e5"]}, {"id": "e16", "name": "Suitcase carry", "machine": "DB or Kettlebell", "muscleGroup": "Core", "defaultSets": "", "defaultReps": "Distance/time based", "refNote": "79 lbs, one side only", "seedPR": null, "archived": false}, {"id": "e17", "name": "Turkish Get up", "machine": "DB", "muscleGroup": "Core", "defaultSets": "1", "defaultReps": "To failure", "refNote": "35 lbs", "seedPR": null, "archived": false}, {"id": "e18", "name": "Hip Abduction OUT", "machine": "Hammer strength", "muscleGroup": "Legs", "defaultSets": "3", "defaultReps": "10", "refNote": "260", "seedPR": null, "archived": false}, {"id": "e19", "name": "Hip Adduction IN", "machine": "Hammer strength", "muscleGroup": "Legs", "defaultSets": "3", "defaultReps": "12", "refNote": "280", "seedPR": null, "archived": false}, {"id": "e20", "name": "Bulgarian Split Squats (leave 1-2 in tank)", "machine": "Kettlebell", "muscleGroup": "Legs", "defaultSets": "4", "defaultReps": "4-6", "refNote": "Two different kettlebells, one in each hand: 36 lbs + 44 lbs", "seedPR": null, "archived": false, "alternateIds": ["e11", "e3", "e4", "e10"]}, {"id": "e21", "name": "Cossack Squats", "machine": "Free Weights", "muscleGroup": "Legs", "defaultSets": "3", "defaultReps": "20", "refNote": "35", "seedPR": null, "archived": false, "alternateIds": ["e7"]}, {"id": "e23", "name": "Cable Heavy Twist Standing", "machine": "Cable", "muscleGroup": "Core", "defaultSets": "3", "defaultReps": "10", "refNote": "35 lbs", "seedPR": null, "archived": false}, {"id": "e24", "name": "Cable Twist Kneeling", "machine": "Cable", "muscleGroup": "Core", "defaultSets": "3", "defaultReps": "10", "refNote": "50", "seedPR": null, "archived": false}, {"id": "e25", "name": "Captain Chair", "machine": "Captain Chair", "muscleGroup": "Core", "defaultSets": "3", "defaultReps": "12", "refNote": "", "seedPR": null, "archived": false}, {"id": "e26", "name": "Farmers Walk", "machine": "Kettlebell", "muscleGroup": "Core", "defaultSets": "", "defaultReps": "Distance based (undetermined)", "refNote": "2x55", "seedPR": null, "archived": false}, {"id": "e27", "name": "Kettlebell swing", "machine": "Kettlebell", "muscleGroup": "Core", "defaultSets": "10 minutes (EMOM)", "defaultReps": "15 reps at the top of each minute, rest the remainder", "refNote": "39 lb kettlebell. Used as cardio/warm-up", "seedPR": null, "archived": false}, {"id": "e28", "name": "Pallof Press", "machine": "Cable", "muscleGroup": "Core", "defaultSets": "", "defaultReps": "", "refNote": "", "seedPR": null, "archived": false}, {"id": "e29", "name": "Dumbbell Alt Reverse Lunges", "machine": "DB", "muscleGroup": "Legs", "defaultSets": "2-3", "defaultReps": "10-12", "refNote": "35 lbs x2", "seedPR": null, "archived": false, "alternateIds": ["e4"]}, {"id": "e30", "name": "Leg Extension", "machine": "Hammer strength", "muscleGroup": "Legs", "defaultSets": "3", "defaultReps": "12", "refNote": "One leg at a time: 160 lbs per leg. Both legs: machine max", "seedPR": null, "archived": false, "alternateIds": ["e11"]}, {"id": "e31", "name": "Nordic Curls", "machine": "Bodyweight", "muscleGroup": "Legs", "defaultSets": "3", "defaultReps": "10", "refNote": "", "seedPR": null, "archived": false, "alternateIds": ["e5"]}, {"id": "e32", "name": "RDL (Romanian DeadLift)", "machine": "Barbell", "muscleGroup": "Legs", "defaultSets": "4", "defaultReps": "10", "refNote": "275", "seedPR": null, "archived": false, "alternateIds": ["e2", "e10", "e12"]}, {"id": "e33", "name": "Seated Dumbbell Calf Raise", "machine": "DB", "muscleGroup": "Legs", "defaultSets": "3", "defaultReps": "15-20", "refNote": "45 lbs per side", "seedPR": null, "archived": false, "alternateIds": ["e6", "e13"]}, {"id": "e34", "name": "Single Leg RDL", "machine": "Free Weights", "muscleGroup": "Legs", "defaultSets": "3", "defaultReps": "10", "refNote": "20", "seedPR": null, "archived": false, "alternateIds": ["e2", "e1"]}, {"id": "e35", "name": "Standing Dumbell Calf", "machine": "Smith", "muscleGroup": "Legs", "defaultSets": "3", "defaultReps": "15-20", "refNote": "180x2", "seedPR": null, "archived": true}, {"id": "e36", "name": "Hack Squat", "machine": "Machine", "muscleGroup": "Legs", "defaultSets": "3", "defaultReps": "10", "refNote": "135x2", "seedPR": null, "archived": false, "alternateIds": ["e14", "e8", "e9", "e11", "e3"]}, {"id": "e38", "name": "Suitcase deadlift", "machine": "Kettlebell", "muscleGroup": "Legs", "defaultSets": "3", "defaultReps": "10", "refNote": "50 lbs in each hand", "seedPR": null, "archived": false, "alternateIds": ["e2", "e1"]}, {"id": "e39", "name": "Superset One leg HipThrust + Reverse Lunges", "machine": "Free Weights", "muscleGroup": "Legs", "defaultSets": "3", "defaultReps": "10", "refNote": "Hip 45x2 + Lung 25x2", "seedPR": null, "archived": true}, {"id": "e40", "name": "Forward Lunges", "machine": "DB", "muscleGroup": "Legs", "defaultSets": "3", "defaultReps": "Mat length", "refNote": "Two 40 lb dumbbells", "seedPR": null, "archived": false, "alternateIds": ["e4"]}, {"id": "e41", "name": "STEP UP - 24\" Box", "machine": "24\" Box", "muscleGroup": "Legs", "defaultSets": "3", "defaultReps": "10", "refNote": "40 lbs per hand, dropset", "seedPR": null, "archived": false, "alternateIds": ["e11", "e4"]}, {"id": "e42", "name": "AX Barbell Squats 4 warm-up sets - Baseline is MAX - 8 x 40% - 5 x 60% - 2 x 80% - Opt 1 x 90% - Then 3 x 7 x 70%  3/21/26 100% = 188*2+barbell", "machine": "", "muscleGroup": "Legs", "defaultSets": "", "defaultReps": "", "refNote": "", "seedPR": null, "archived": true}, {"id": "e43", "name": "Row -Two hands - Seated", "machine": "Cable", "muscleGroup": "Back", "defaultSets": "3", "defaultReps": "10", "refNote": "143", "seedPR": null, "archived": false}, {"id": "e44", "name": "Lat Pull Down - Narrow grip", "machine": "Hammer strength", "muscleGroup": "Back", "defaultSets": "3", "defaultReps": "12", "refNote": "231 lbs, dropset", "seedPR": null, "archived": false}, {"id": "e45", "name": "Straight Arms Pushdown", "machine": "Cable", "muscleGroup": "Back", "defaultSets": "3", "defaultReps": "10", "refNote": "77 lbs, dropset", "seedPR": null, "archived": false}, {"id": "e46", "name": "DB Pullover 1.5 Ladder", "machine": "Free Weights", "muscleGroup": "Back", "defaultSets": "3", "defaultReps": "10", "refNote": "80 lb dumbbell, 1.5-rep style", "seedPR": null, "archived": false}, {"id": "e47", "name": "Triceps Pushdown", "machine": "Cable", "muscleGroup": "Triceps", "defaultSets": "3", "defaultReps": "12", "refNote": "88 lbs, dropset", "seedPR": null, "archived": false}, {"id": "e48", "name": "Lying DB Extension (triceps)", "machine": "DB or Bar", "muscleGroup": "Triceps", "defaultSets": "3", "defaultReps": "10", "refNote": "Either one heavy dumbbell/bar with both hands (65 lbs), or two dumbbells one per arm (35 lbs each). Keep elbows close.", "seedPR": null, "archived": false}, {"id": "e49", "name": "Cable Triceps Kickbacks", "machine": "Cable", "muscleGroup": "Triceps", "defaultSets": "3", "defaultReps": "12", "refNote": "22 x 2", "seedPR": null, "archived": false, "alternateIds": ["alt6"]}, {"id": "e50", "name": "Face Pull", "machine": "Cable", "muscleGroup": "Back", "defaultSets": "3", "defaultReps": "15", "refNote": "67 lbs", "seedPR": null, "archived": false}, {"id": "e51", "name": "Barbell Row", "machine": "Free Weights", "muscleGroup": "Back", "defaultSets": "3", "defaultReps": "6-8", "refNote": "Baseline 185", "seedPR": null, "archived": false, "alternateIds": ["alt1", "alt2", "e93"]}, {"id": "e52", "name": "Lat Pull Down Wide Grip", "machine": "Hammer strength", "muscleGroup": "Back", "defaultSets": "3", "defaultReps": "12", "refNote": "231 lbs, dropset", "seedPR": null, "archived": false}, {"id": "e53", "name": "1.5 DB High Pull (Rear Delt)", "machine": "Free Weights", "muscleGroup": "Back", "defaultSets": "3", "defaultReps": "12", "refNote": "30 DS", "seedPR": null, "archived": false}, {"id": "e54", "name": "1.5 High Cable Row Ladder (One Arm)", "machine": "Cable", "muscleGroup": "Back", "defaultSets": "1", "defaultReps": "To failure, per arm", "refNote": "60 lbs. Ladder rest: 1s, then 2s, then 3s, etc. between reps", "seedPR": null, "archived": false}, {"id": "e55", "name": "Inverted Row", "machine": "Bodyweight", "muscleGroup": "Back", "defaultSets": "1", "defaultReps": "To failure", "refNote": "", "seedPR": null, "archived": false}, {"id": "e56", "name": "Closegrip Bench Press", "machine": "Smith", "muscleGroup": "Triceps", "defaultSets": "3", "defaultReps": "10", "refNote": "65 lbs per side, dropset", "seedPR": null, "archived": false}, {"id": "e57", "name": "PJR DB Pullover", "machine": "DB", "muscleGroup": "Triceps", "defaultSets": "3", "defaultReps": "10", "refNote": "Either one heavy dumbbell/bar with both hands (75 lbs), or two dumbbells one per arm (35 lbs each)", "seedPR": null, "archived": false}, {"id": "e58", "name": "Overhead triceps extension (Pushaway)", "machine": "Cable", "muscleGroup": "Triceps", "defaultSets": "3", "defaultReps": "15", "refNote": "67.5", "seedPR": null, "archived": false}, {"id": "e59", "name": "\"X\" Pushdown", "machine": "Cable", "muscleGroup": "Triceps", "defaultSets": "3", "defaultReps": "12", "refNote": "30 lbs per side, dropset", "seedPR": null, "archived": false}, {"id": "e60", "name": "Bench Dips", "machine": "Bodyweight", "muscleGroup": "Triceps", "defaultSets": "1", "defaultReps": "To failure", "refNote": "Bodyweight + additional weight (currently 0)", "seedPR": null, "archived": false}, {"id": "e61", "name": "Biceps EZ Bar Curl", "machine": "EZ Bar", "muscleGroup": "Biceps", "defaultSets": "3", "defaultReps": "10", "refNote": "90 lbs, dropset", "seedPR": null, "archived": false}, {"id": "e62", "name": "DB Crossbody Hammer Curls", "machine": "DB", "muscleGroup": "Biceps", "defaultSets": "3", "defaultReps": "10-12", "refNote": "45x2", "seedPR": null, "archived": false}, {"id": "e63", "name": "Cable Stretch Drag Curls", "machine": "Cable", "muscleGroup": "Biceps", "defaultSets": "3", "defaultReps": "10-12", "refNote": "37.5 lbs per side", "seedPR": null, "archived": false}, {"id": "e64", "name": "Mentzer Biceps Pulldown Trap Set (123454321)", "machine": "Cable", "muscleGroup": "Biceps", "defaultSets": "3", "defaultReps": "9 reps, tempo pyramid: 1s,2s,3s,4s,5s,4s,3s,2s,1s per rep", "refNote": "187 lbs, dropset", "seedPR": null, "archived": false}, {"id": "e65", "name": "Incline Bench Press", "machine": "DB", "muscleGroup": "Chest", "defaultSets": "4", "defaultReps": "5, 10, 10, 20 (hit 20 on last set = increase weight next time)", "refNote": "75 lb dumbbells x2, 45° incline", "seedPR": null, "archived": false, "alternateIds": ["alt11", "e92"]}, {"id": "e66", "name": "Crossover Chest #11", "machine": "Cable", "muscleGroup": "Chest", "defaultSets": "3", "defaultReps": "10, then partial reps once full range isn't possible", "refNote": "60 lbs per side", "seedPR": null, "archived": false}, {"id": "e67", "name": "DB Floor Fly", "machine": "DB", "muscleGroup": "Chest", "defaultSets": "3", "defaultReps": "10", "refNote": "45x2", "seedPR": null, "archived": false}, {"id": "e68", "name": "Deficit Push Ups Ladder", "machine": "Free Weights", "muscleGroup": "Chest", "defaultSets": "1", "defaultReps": "8 minimum, then to failure", "refNote": "", "seedPR": null, "archived": false}, {"id": "e69", "name": "Dips Failure", "machine": "Bodyweight", "muscleGroup": "Chest", "defaultSets": "4", "defaultReps": "To failure each set: 20, 14, 10, 7", "refNote": "Weighted. PR was 20/14/10/7. Used either as a warm-up or as part of a programmed workout", "seedPR": null, "archived": false, "alternateIds": ["alt7"]}, {"id": "e70", "name": "Pull ups", "machine": "Bodyweight", "muscleGroup": "Back", "defaultSets": "4", "defaultReps": "12, 12, 10, 9 (ladder)", "refNote": "Currently bodyweight only (elbow injury) — was adding 20 lbs before", "seedPR": null, "archived": false, "alternateIds": ["alt3"]}, {"id": "e71", "name": "DB Spider Curls", "machine": "DB", "muscleGroup": "Biceps", "defaultSets": "3", "defaultReps": "10", "refNote": "45 DS", "seedPR": null, "archived": false}, {"id": "e72", "name": "Biceps DB Incline Curl (alternating arms)", "machine": "DB", "muscleGroup": "Biceps", "defaultSets": "3", "defaultReps": "12", "refNote": "Seated: 40 lbs per arm. Standing: 45 lbs, dropset", "seedPR": null, "archived": false}, {"id": "e73", "name": "Biceps DB Standing Trap Set (123454321)", "machine": "DB", "muscleGroup": "Biceps", "defaultSets": "1", "defaultReps": "To failure, tempo pyramid: 1s,2s,3s,4s,5s,4s,3s,2s,1s per rep", "refNote": "45 lbs, dropset", "seedPR": null, "archived": false}, {"id": "e74", "name": "Chest Press - DB", "machine": "DB", "muscleGroup": "Chest", "defaultSets": "4", "defaultReps": "5, 10, 10, 20", "refNote": "75 lb dumbbells x2", "seedPR": null, "archived": false}, {"id": "e75", "name": "Hi-Lo Crossover chest", "machine": "Cable", "muscleGroup": "Chest", "defaultSets": "3", "defaultReps": "10", "refNote": "60 lbs per side", "seedPR": null, "archived": false}, {"id": "e76", "name": "Pec Fly", "machine": "Hammer strength", "muscleGroup": "Chest", "defaultSets": "3", "defaultReps": "10/12", "refNote": "220", "seedPR": null, "archived": false, "alternateIds": ["alt8"]}, {"id": "e77", "name": "Prison Pushups", "machine": "Bodyweight", "muscleGroup": "Chest", "defaultSets": "1", "defaultReps": "To failure", "refNote": "Min 25, PR 38", "seedPR": null, "archived": false, "alternateIds": ["alt9"]}, {"id": "e78", "name": "Supinated Pulldown", "machine": "Cable", "muscleGroup": "Back", "defaultSets": "3", "defaultReps": "To failure", "refNote": "209 lbs, dropset", "seedPR": null, "archived": false}, {"id": "e80", "name": "Arnold Press - Shoulders", "machine": "DB", "muscleGroup": "Shoulders", "defaultSets": "3", "defaultReps": "10", "refNote": "50 lbs x2, dropset", "seedPR": null, "archived": false}, {"id": "e81", "name": "Overhead Press", "machine": "Bar", "muscleGroup": "Shoulders", "defaultSets": "2", "defaultReps": "6-8", "refNote": "80 lbs", "seedPR": null, "archived": false, "alternateIds": ["e96"]}, {"id": "e82", "name": "Front Delt (seated slow swing)", "machine": "Free Weights", "muscleGroup": "Shoulders", "defaultSets": "3", "defaultReps": "12", "refNote": "10", "seedPR": null, "archived": false}, {"id": "e83", "name": "Gorilla Row", "machine": "Kettlebell", "muscleGroup": "Back", "defaultSets": "3", "defaultReps": "10", "refNote": "60 lbs", "seedPR": null, "archived": false}, {"id": "e84", "name": "Rear Deltoid", "machine": "Hammer strength", "muscleGroup": "Shoulders", "defaultSets": "3", "defaultReps": "10/12", "refNote": "180", "seedPR": null, "archived": false, "alternateIds": []}, {"id": "e85", "name": "High Row (Plate-Loaded)", "machine": "Hammer strength", "muscleGroup": "Back", "defaultSets": "3", "defaultReps": "10", "refNote": "120 lbs per side. Independent arms, pull from a high angle — hits the serratus", "seedPR": null, "archived": false}, {"id": "e86", "name": "Shoulder Press", "machine": "Hammer strength", "muscleGroup": "Shoulders", "defaultSets": "3", "defaultReps": "6", "refNote": "70 lbs, dropset", "seedPR": null, "archived": false}, {"id": "e87", "name": "Upright Row (Trap Bar Shrugs)", "machine": "Trap Bar", "muscleGroup": "Shoulders", "defaultSets": "3", "defaultReps": "10", "refNote": "105 lbs, dropset", "seedPR": null, "archived": false}, {"id": "e88", "name": "Triceps Extension", "machine": "Hammer strength", "muscleGroup": "Triceps", "defaultSets": "3", "defaultReps": "12", "refNote": "70 lbs per side", "seedPR": null, "archived": false}, {"id": "e89", "name": "Waiter Curl Biceps", "machine": "Cable (Rope)", "muscleGroup": "Biceps", "defaultSets": "3", "defaultReps": "10", "refNote": "60.5 lbs", "seedPR": null, "archived": false}, {"id": "e90", "name": "Wide Chest Press Seated", "machine": "Hammer strength", "muscleGroup": "Chest", "defaultSets": "4", "defaultReps": "5, 10, 10, 20", "refNote": "100 lbs per side", "seedPR": null, "archived": false}, {"id": "e91", "name": "Preacher Curls", "machine": "EZ Bar", "muscleGroup": "Biceps", "defaultSets": "3", "defaultReps": "10", "refNote": "25 lb plates per side + bar", "seedPR": null, "archived": false}, {"id": "e92", "name": "Incline Chest Press (Precor)", "machine": "Precor", "muscleGroup": "Chest", "defaultSets": "3", "defaultReps": "10", "refNote": "70 lbs per side", "seedPR": null, "archived": false, "alternateIds": ["e65"]}, {"id": "alt1", "name": "Chest Supported DB Row", "machine": "DB", "muscleGroup": "Back", "defaultSets": "3", "defaultReps": "6-8", "refNote": "DB95", "seedPR": null, "archived": false, "alternateIds": ["e51", "alt2", "e93"]}, {"id": "alt2", "name": "Landmine Row", "machine": "Free Weights", "muscleGroup": "Back", "defaultSets": "3", "defaultReps": "6-8", "refNote": "L135+Barbell weight", "seedPR": null, "archived": false, "alternateIds": ["e51", "alt1", "e93"]}, {"id": "alt3", "name": "Chin ups", "machine": "Bodyweight", "muscleGroup": "Back", "defaultSets": "4", "defaultReps": "12, 12, 10, 9 (ladder)", "refNote": "Currently bodyweight only (elbow injury) — was adding 20 lbs before", "seedPR": null, "archived": false, "alternateIds": ["e70"]}, {"id": "alt4", "name": "Angled Leg Press", "machine": "Hammer strength", "muscleGroup": "Legs", "defaultSets": "3", "defaultReps": "12", "refNote": "140/590 High 590 Low", "seedPR": null, "archived": false, "alternateIds": ["e14"]}, {"id": "alt5", "name": "SFB Curls (Slick Floor Bridge Curls)", "machine": "", "muscleGroup": "Legs", "defaultSets": "3", "defaultReps": "10", "refNote": "200", "seedPR": null, "archived": false, "alternateIds": ["e5"]}, {"id": "alt6", "name": "DB Triceps Kickbacks", "machine": "DB", "muscleGroup": "Triceps", "defaultSets": "3", "defaultReps": "12", "refNote": "", "seedPR": null, "archived": false, "alternateIds": ["e49"]}, {"id": "alt7", "name": "1.5 Dips Ladder", "machine": "Bodyweight", "muscleGroup": "Chest", "defaultSets": "3", "defaultReps": "To failure", "refNote": "1.5-rep style (full rep + half rep counts as one)", "seedPR": null, "archived": false, "alternateIds": ["e69"]}, {"id": "alt8", "name": "Incline Cable Press", "machine": "Cable", "muscleGroup": "Chest", "defaultSets": "3", "defaultReps": "10/12", "refNote": "", "seedPR": null, "archived": false, "alternateIds": ["e76"]}, {"id": "alt9", "name": "Cobra Pushups", "machine": "Bodyweight", "muscleGroup": "Triceps", "defaultSets": "1", "defaultReps": "To failure", "refNote": "Min 25, PR 38", "seedPR": null, "archived": false, "alternateIds": ["e77"]}, {"id": "alt10", "name": "Standing Smith Machine Calf Raise", "machine": "Smith", "muscleGroup": "Legs", "defaultSets": "2-3", "defaultReps": "10-12", "refNote": "93 lbs plate per side + Smith machine bar weight", "seedPR": null, "archived": false, "alternateIds": ["e6"]}, {"id": "e93", "name": "T-Bar Row", "machine": "Free Weights", "muscleGroup": "Back", "defaultSets": "3", "defaultReps": "6, 6, 7", "refNote": "135 lbs", "seedPR": null, "archived": false, "alternateIds": ["e51", "alt1", "alt2"]}, {"id": "alt11", "name": "Incline Barbell Press", "machine": "Free Weights", "muscleGroup": "Chest", "defaultSets": "4", "defaultReps": "5, 10, 10, 20 (hit 20 on last set = increase weight next time)", "refNote": "135 lbs, 45° incline", "seedPR": null, "archived": false, "alternateIds": ["e65"]}, {"id": "e94", "name": "One Leg Hip Thrust", "machine": "Free Weights", "muscleGroup": "Legs", "defaultSets": "3", "defaultReps": "10", "refNote": "45 lbs per side", "seedPR": null, "archived": false, "supersetWith": ["e95"], "alternateIds": ["e10"]}, {"id": "e95", "name": "Reverse Lunges (DB)", "machine": "Free Weights", "muscleGroup": "Legs", "defaultSets": "3", "defaultReps": "10", "refNote": "25 lbs per side", "seedPR": null, "archived": false, "supersetWith": ["e94"], "alternateIds": ["e4"]}, {"id": "emu5o2pdv2nda9", "name": "Decline bench - Abdominals", "machine": "Nautilus", "muscleGroup": "Core", "defaultSets": "2", "defaultReps": "20", "refNote": "", "seedPR": null, "archived": false}, {"id": "e96", "name": "Dumbbell Single-Arm Overhead Press", "machine": "DB", "muscleGroup": "Shoulders", "defaultSets": "2", "defaultReps": "6-8, per arm, to form failure", "refNote": "40 lb dumbbell", "seedPR": null, "archived": false, "alternateIds": ["e81"]}, {"id": "e97", "name": "Dumbbell Lateral Raise", "machine": "DB", "muscleGroup": "Shoulders", "defaultSets": "3", "defaultReps": "10, then partials with bent elbows once straight-arm reps fail", "refNote": "30 lbs per arm. Slight forward lean, thumbs over pinkies", "seedPR": null, "archived": false}, {"id": "e98", "name": "Dumbbell Rear Delt Row", "machine": "DB", "muscleGroup": "Shoulders", "defaultSets": "2", "defaultReps": "10-12", "refNote": "30 lbs per arm. Brace well to limit momentum from the rest of the back", "seedPR": null, "archived": false}, {"id": "e99", "name": "Dumbbell Cheat Lateral Raise", "machine": "DB", "muscleGroup": "Shoulders", "defaultSets": "3", "defaultReps": "8, form failure", "refNote": "35 lbs per arm (starting guess). Slight body momentum to lift, control the lowering phase", "seedPR": null, "archived": false}, {"id": "e100", "name": "Incline Dumbbell Front Raise", "machine": "DB", "muscleGroup": "Shoulders", "defaultSets": "2-3", "defaultReps": "10-12, then partials", "refNote": "25 lbs per arm. On an incline bench for constant tension; Cavaliere's pick when a cable machine isn't available", "seedPR": null, "archived": false}, {"id": "emu8k4a5z8gwzw", "name": "GHD Back Extension", "machine": "GHD", "muscleGroup": "Legs", "defaultSets": "3", "defaultReps": "10", "refNote": "", "seedPR": null, "archived": false, "alternateIds": ["e1", "e2", "e10", "e12"]}, {"id": "emu9w7wa26gqat", "name": "Banded Speed Zercher Squats", "machine": "Band + Barbell", "muscleGroup": "Legs", "defaultSets": "5", "defaultReps": "6", "refNote": "", "seedPR": null, "archived": false, "alternateIds": []}, {"id": "emu9w9a7rjst3s", "name": "20 yard Heavy Sled Push", "machine": "Sled", "muscleGroup": "Legs", "defaultSets": "8", "defaultReps": "1", "refNote": "", "seedPR": null, "archived": false, "alternateIds": []}, {"id": "emu9wq36v62mcb", "name": "Glute Ham Raise", "machine": "GHD", "muscleGroup": "Legs", "defaultSets": "3", "defaultReps": "7", "refNote": "", "seedPR": null, "archived": false, "alternateIds": []}, {"id": "emubvaklw3nw18", "name": "Seated Dip", "machine": "Machine", "muscleGroup": "Triceps", "defaultSets": "3", "defaultReps": "10", "refNote": "", "seedPR": null, "archived": false, "alternateIds": []}];
+
+const SEED_PROGRAMS = [{"id": "p1", "name": "AX BACK 1", "exerciseIds": ["e43", "e44", "e45", "e46", "e70"], "archived": false}, {"id": "p2", "name": "AX BACK 2", "exerciseIds": ["e50", "e93", "e52", "e53", "e54", "e55"], "archived": false}, {"id": "p3", "name": "AX BICEPS 1", "exerciseIds": ["e61", "e62", "e63", "e64"], "archived": false}, {"id": "p4", "name": "AX BICEPS 2", "exerciseIds": ["e71", "e72", "e73"], "archived": false}, {"id": "p5", "name": "AX CHEST 1", "exerciseIds": ["e65", "e66", "e67", "e68", "e69"], "archived": false}, {"id": "p6", "name": "AX CHEST 2", "exerciseIds": ["e74", "e75", "e76", "alt7", "e77"], "archived": false}, {"id": "p7", "name": "AX L1", "exerciseIds": ["e1", "e2", "e3", "e4", "e5", "e6"], "archived": false}, {"id": "p8", "name": "AX L2", "exerciseIds": ["e7", "e8", "e9", "e10", "e11", "e12", "e13"], "archived": false}, {"id": "p9", "name": "AX TRICEPS 1", "exerciseIds": ["e47", "e48", "e49", "alt9"], "archived": false}, {"id": "p10", "name": "AX TRICEPS 2", "exerciseIds": ["e56", "e57", "e58", "e59", "e60"], "archived": false}, {"id": "p11", "name": "JONNI - BACK", "exerciseIds": ["e78"], "archived": false}, {"id": "p12", "name": "AX Shoulders 1", "exerciseIds": ["e96", "e97", "e98"], "archived": false}, {"id": "p13", "name": "AX Shoulders 2", "exerciseIds": ["e99", "e100", "e50"], "archived": false}, {"id": "pmu9wbo238s7ke", "name": "Judd Lienhard Leg 1", "exerciseIds": ["emu9w7wa26gqat", "emu9w9a7rjst3s", "emu9wq36v62mcb"], "archived": false}];
+
+const todayStr = () => {
+  const d = new Date();
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+};
+
+const formatDate = (iso) => {
+  const [y, m, d] = iso.split("-").map(Number);
+  const date = new Date(y, m - 1, d);
+  return date.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+};
+
+const uid = (prefix) => `${prefix}${Date.now().toString(36)}${Math.random().toString(36).slice(2, 7)}`;
+
+const repValues = (s) => {
+  if (s.split) {
+    const vals = [];
+    const l = parseFloat(s.left);
+    const r = parseFloat(s.right);
+    if (!isNaN(l)) vals.push(l);
+    if (!isNaN(r)) vals.push(r);
+    return vals;
+  }
+  const w = parseFloat(s.weight);
+  return isNaN(w) ? [] : [w];
+};
+
+const formatRep = (s) => {
+  const suffix = s.kind === "DS" ? " DS" : "";
+  const repsPart = s.reps ? ` x${s.reps}` : "";
+  if (s.split) {
+    return `L${s.left || "-"} / R${s.right || "-"}${suffix}${repsPart}`;
+  }
+  return `${s.weight}${suffix}${repsPart}`;
+};
+
+async function storageGet(key) {
+  try {
+    const v = localStorage.getItem(key);
+    return v ? JSON.parse(v) : null;
+  } catch (e) {
+    return null;
+  }
+}
+async function storageSet(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (e) {
+    console.error("storage set failed", key, e);
+  }
+}
+async function storageDelete(key) {
+  try {
+    localStorage.removeItem(key);
+  } catch (e) {}
+}
+
+const MUSCLE_GROUPS = ["Legs", "Back", "Chest", "Shoulders", "Biceps", "Triceps", "Core", "Other"];
+
+const SUGGESTED_EXERCISES = [
+  {
+    id: "sug1",
+    name: "Zottman Curl",
+    machine: "DB",
+    muscleGroup: "Biceps",
+    defaultSets: "3",
+    defaultReps: "10",
+    refNote: "",
+    seedPR: null,
+    archived: false,
+    suggested: true,
+    suggestedNote: "Curl up palms-up, rotate at the top, lower palms-down. Often featured by Athlean-X for building the forearms and elbow tendons alongside the biceps.",
+  },
+  {
+    id: "sug2",
+    name: "Kickstand RDL",
+    machine: "Free Weights",
+    muscleGroup: "Legs",
+    defaultSets: "3",
+    defaultReps: "8-10 per side",
+    refNote: "",
+    seedPR: null,
+    archived: false,
+    suggested: true,
+    suggestedNote: "A single-leg-biased RDL with the back foot lightly kickstanded for balance. Common in joint-friendly strength coaching like Judd Lienhard's, and a natural fit for training one side at a time.",
+  },
+  {
+    id: "sug3",
+    name: "Devil Press",
+    machine: "DB",
+    muscleGroup: "Core",
+    defaultSets: "3",
+    defaultReps: "8-10",
+    refNote: "",
+    seedPR: null,
+    archived: false,
+    suggested: true,
+    suggestedNote: "Burpee into a double dumbbell snatch overhead. A staple of Marcus Filly's functional bodybuilding style for full-body conditioning.",
+  },
+];
+
+const sortExercises = (list, getStats) =>
+  list.slice().sort((a, b) => {
+    const sa = getStats ? getStats(a.id) : {};
+    const sb = getStats ? getStats(b.id) : {};
+    const scoreA = (sa.last ? 2 : 0) + (sa.prStraight !== null && sa.prStraight !== undefined ? 1 : 0) + (sa.prDS !== null && sa.prDS !== undefined ? 1 : 0);
+    const scoreB = (sb.last ? 2 : 0) + (sb.prStraight !== null && sb.prStraight !== undefined ? 1 : 0) + (sb.prDS !== null && sb.prDS !== undefined ? 1 : 0);
+    if (scoreB !== scoreA) return scoreB - scoreA;
+    return a.name.localeCompare(b.name);
+  });
+
+function App() {
+  const [loaded, setLoaded] = useState(false);
+  const [exercises, setExercises] = useState([]);
+  const [programs, setPrograms] = useState([]);
+  const [logs, setLogs] = useState([]);
+  const [draft, setDraft] = useState(null);
+  const [tab, setTab] = useState("today");
+  const [detailExerciseId, setDetailExerciseId] = useState(null);
+  const [detailProgramId, setDetailProgramId] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      let ex = await storageGet("ironledger:exercises");
+      let pr = await storageGet("ironledger:programs");
+      let lg = await storageGet("ironledger:logs");
+      let dr = await storageGet("ironledger:draft");
+      const SEED_PATCHES = {
+        e51: { oldName: "Barbell Row (B)-ChestSupported DB Row (DB) - Landmine Row (L) - GO HEAVY", name: "Barbell Row", machine: "Free Weights", refNote: "Baseline 185", alternateIds: ["alt1", "alt2"] },
+        e70: { oldName: "Pull ups (P) | Chin ups (C)", name: "Pull ups", alternateIds: ["alt3"] },
+        e14: { oldName: "Seated Leg Press / Angled Leg Press", name: "Seated Leg Press", alternateIds: ["alt4"] },
+        e5: { oldName: "Seated Leg Curl - One leg or SFB Curls", name: "Seated Leg Curl - One Leg", refNote: "125/125", alternateIds: ["alt5"] },
+        e49: { oldName: "Cable / DB Triceps Kickbacks", name: "Cable Triceps Kickbacks", machine: "Cable", alternateIds: ["alt6"] },
+        e69: { oldName: "Dips Failure | 1.5 Dips Ladder", name: "Dips Failure", alternateIds: ["alt7"] },
+        e76: { oldName: "Pec Fly / Rear Deltoid (or INCLINE CABLE PRESS)", name: "Pec Fly", alternateIds: ["alt8"] },
+        e77: { oldName: "Prison Pushups | Cobra Pushups", name: "Prison Pushups", alternateIds: ["alt9"] },
+        e84: { oldName: "Pec Fly / Rear Deltoid", name: "Rear Deltoid", muscleGroup: "Shoulders" },
+        e2: { oldRefNote: "100%=468 PR425", refNote: "Warm-up: 8x40%, 5x60%, 2x80%, opt 1x90%. Work: 3x5x80%. 4/1/26 100%=468. PR425" },
+        e8: { oldRefNote: "B435(70%=135*2) PR315", refNote: "B435(70%=135*2) PR315. Warm-up: 8x40%, 5x60%, 2x80%, opt 1x90%. Work: 3x7x70%. 3/21/26 100%=188x2+bar" },
+        e42: {
+          oldName: "AX Barbell Squats 4 warm-up sets - Baseline is MAX - 8 x 40% - 5 x 60% - 2 x 80% - Opt 1 x 90% - Then 3 x 7 x 70%  3/21/26 100% = 188*2+barbell",
+          archived: true,
+        },
+        e1: { oldRefNote: "sub max", machine: "Bodyweight", refNote: "Warm-up, bodyweight" },
+        e3: { oldRefNote: "145", machine: "Free Weights", defaultReps: "6-8, leaving 2-3 in the tank", refNote: "185 (current working weight)" },
+        e4: { oldRefNote: "45x2", refNote: "45 lbs plate per side + Smith machine bar weight" },
+        e6: { oldName: "Standing Calf Raises", name: "Calf Raise Machine", machine: "Machine", refNote: "90 kg (198 lbs)", alternateIds: ["alt10"] },
+        e7: { oldRefNote: "sub max", machine: "Bands", refNote: "Warm-up, banded" },
+        e9: { oldName: "Barbell Squats (Smith Machine)", name: "Squat (Smith Machine)", refNote: "Baseline (100%): 185/side. Working weight ~70% = ~130/side" },
+        e36: { oldName: "Standing Hack Squat", name: "Hack Squat", refNote: "135x2" },
+        e10: { oldRefNote: "185x2", refNote: "185 lbs per side" },
+        e11: { oldRefNote: "65 DB x 2", machine: "Bands + DB", refNote: "Band behind knees + two 65 lb dumbbells" },
+        e44: { oldRefNote: "231 DS", refNote: "231 lbs, dropset" },
+        e45: { oldRefNote: "77DS", refNote: "77 lbs, dropset" },
+        e46: { oldRefNote: "80", machine: "Free Weights", refNote: "80 lb dumbbell, 1.5-rep style" },
+        e70: { oldRefNote: "Weighted", machine: "Bodyweight", defaultReps: "12, 12, 10, 9 (ladder)", refNote: "Currently bodyweight only (elbow injury) — was adding 20 lbs before" },
+        alt3: { oldRefNote: "Weighted", machine: "Bodyweight", defaultReps: "12, 12, 10, 9 (ladder)", refNote: "Currently bodyweight only (elbow injury) — was adding 20 lbs before" },
+        e50: { oldRefNote: "60", refNote: "67 lbs" },
+        e52: { oldRefNote: "231 DS", refNote: "231 lbs, dropset" },
+        e54: { oldName: "1..5 High Cable Row Ladder One Arm)", name: "1.5 High Cable Row Ladder (One Arm)", defaultReps: "To failure, per arm", refNote: "60 lbs. Ladder rest: 1s, then 2s, then 3s, etc. between reps" },
+        e55: { oldRefNote: "body", machine: "Bodyweight", defaultReps: "To failure", refNote: "" },
+        e65: {
+          oldName: "Chest Press - 45 - Seated - #101",
+          name: "Incline Bench Press",
+          machine: "DB",
+          defaultReps: "5, 10, 10, 20 (hit 20 on last set = increase weight next time)",
+          refNote: "75 lb dumbbells x2, 45° incline",
+          alternateIds: ["alt11"],
+        },
+        e66: { oldRefNote: "60x2", defaultReps: "10, then partial reps once full range isn't possible", refNote: "60 lbs per side" },
+        e68: { oldRefNote: "Min 8", defaultReps: "8 minimum, then to failure", refNote: "" },
+        e69: {
+          oldRefNote: "Weighted",
+          machine: "Bodyweight",
+          defaultSets: "4",
+          defaultReps: "To failure each set: 20, 14, 10, 7",
+          refNote: "Weighted. PR was 20/14/10/7. Used either as a warm-up or as part of a programmed workout",
+        },
+        alt7: { oldRefNote: "", machine: "Bodyweight", defaultReps: "To failure", refNote: "1.5-rep style (full rep + half rep counts as one)" },
+        e74: { oldRefNote: "75DSx2 |5101011", machine: "DB", defaultSets: "4", defaultReps: "5, 10, 10, 20", refNote: "75 lb dumbbells x2" },
+        e75: { oldRefNote: "60x2", refNote: "60 lbs per side" },
+        e77: { oldRefNote: "Min 25", machine: "Bodyweight", defaultReps: "To failure", refNote: "Min 25, PR 38" },
+        alt9: { oldRefNote: "Min 25", machine: "Bodyweight", defaultReps: "To failure", refNote: "Min 25, PR 38" },
+        e61: { oldRefNote: "90 DS", machine: "EZ Bar", refNote: "90 lbs, dropset" },
+        e63: { oldName: "Cable Strech Drag Curls", name: "Cable Stretch Drag Curls", refNote: "37.5 lbs per side" },
+        e64: { oldRefNote: "187 DS", defaultReps: "9 reps, tempo pyramid: 1s,2s,3s,4s,5s,4s,3s,2s,1s per rep", refNote: "187 lbs, dropset" },
+        e72: { oldRefNote: "45DS |40 Seat", name: "Biceps DB Incline Curl (alternating arms)", refNote: "Seated: 40 lbs per arm. Standing: 45 lbs, dropset" },
+        e73: { oldRefNote: "45 DS", defaultReps: "To failure, tempo pyramid: 1s,2s,3s,4s,5s,4s,3s,2s,1s per rep", refNote: "45 lbs, dropset" },
+        e47: { oldName: "Tripceps Pushdown", name: "Triceps Pushdown", refNote: "88 lbs, dropset" },
+        e48: { oldRefNote: "65 or 35x2", machine: "DB or Bar", refNote: "Either one heavy dumbbell/bar with both hands (65 lbs), or two dumbbells one per arm (35 lbs each). Keep elbows close." },
+        e56: { oldRefNote: "65DS x2", refNote: "65 lbs per side, dropset" },
+        e57: { oldRefNote: "75 or 35x2", refNote: "Either one heavy dumbbell/bar with both hands (75 lbs), or two dumbbells one per arm (35 lbs each)" },
+        e59: { oldRefNote: "30DS x2", refNote: "30 lbs per side, dropset" },
+        e60: { oldRefNote: "", machine: "Bodyweight", defaultReps: "To failure", refNote: "Bodyweight + additional weight (currently 0)" },
+        e16: { oldRefNote: "79", machine: "DB or Kettlebell", muscleGroup: "Core", defaultReps: "Distance/time based", refNote: "79 lbs, one side only" },
+        e17: { oldRefNote: "35", machine: "DB", defaultSets: "1", defaultReps: "To failure", refNote: "35 lbs" },
+        e20: { oldRefNote: "36+44", machine: "Kettlebell", refNote: "Two different kettlebells, one in each hand: 36 lbs + 44 lbs" },
+        e21: { oldName: "Cosack Squats", name: "Cossack Squats" },
+        e29: { oldName: "Dumbell Alt Reverse Lunges", name: "Dumbbell Alt Reverse Lunges", machine: "DB", refNote: "35 lbs x2" },
+        e31: { oldRefNote: "Body", machine: "Bodyweight", refNote: "" },
+        e30: { oldRefNote: "160/160 | Max", refNote: "One leg at a time: 160 lbs per leg. Both legs: machine max" },
+        e32: { oldRefNote: "275", machine: "Barbell" },
+        e33: { oldName: "Seated Dumbell Calf Raise", name: "Seated Dumbbell Calf Raise", machine: "DB", refNote: "45 lbs per side" },
+        e6: { oldName: "Calf Raise Machine", name: "Standing Calf Raise Machine" },
+        alt10: { oldName: "Smith Machine Calf Raise", name: "Standing Smith Machine Calf Raise" },
+        e35: { oldRefNote: "180x2", archived: true },
+        e38: { oldRefNote: "50", machine: "Kettlebell", refNote: "50 lbs in each hand" },
+        e39: { oldRefNote: "Hip 45x2 + Lung 25x2", archived: true },
+        e40: { oldName: "Lunges - Forward Steps", name: "Forward Lunges", machine: "DB", refNote: "Two 40 lb dumbbells" },
+        e41: { oldRefNote: "40x2 DS", machine: "24\" Box", refNote: "40 lbs per hand, dropset" },
+        e23: { oldRefNote: "", defaultSets: "3", defaultReps: "10", refNote: "35 lbs" },
+        e24: { oldRefNote: "50", defaultSets: "3", defaultReps: "10" },
+        e26: { oldRefNote: "2x55", defaultReps: "Distance based (undetermined)" },
+        e27: { oldRefNote: "39", defaultSets: "10 minutes (EMOM)", defaultReps: "15 reps at the top of each minute, rest the remainder", refNote: "39 lb kettlebell. Used as cardio/warm-up" },
+        e28: { oldName: "Palloff Press", name: "Pallof Press" },
+        e78: { oldRefNote: "209DS", defaultReps: "To failure", refNote: "209 lbs, dropset" },
+        e80: { oldRefNote: "50DS x2", machine: "DB", refNote: "50 lbs x2, dropset" },
+        e81: { oldName: "Bar overhead press", name: "Overhead Press", machine: "Bar" },
+        e83: { oldRefNote: "60 KB", machine: "Kettlebell", refNote: "60 lbs" },
+        e85: { oldName: "Serratus Machine", name: "High Row (Plate-Loaded)", muscleGroup: "Back", refNote: "120 lbs per side. Independent arms, pull from a high angle — hits the serratus" },
+        e86: { oldRefNote: "70 DS", refNote: "70 lbs, dropset" },
+        e87: { oldName: "Trap Bar", name: "Upright Row (Trap Bar Shrugs)", machine: "Trap Bar", muscleGroup: "Shoulders", refNote: "105 lbs, dropset" },
+        e88: { oldRefNote: "70x2", refNote: "70 lbs per side" },
+        e89: { oldName: "Waiter Curl Rope Biceps", name: "Waiter Curl Biceps", machine: "Cable (Rope)", refNote: "60.5 lbs" },
+        e90: { oldRefNote: "100x2 |5101020", defaultSets: "4", defaultReps: "5, 10, 10, 20", refNote: "100 lbs per side" },
+        e91: { oldRefNote: "25x2 + bar", machine: "EZ Bar", refNote: "25 lb plates per side + bar" },
+        e92: { oldName: ["Inclined Chest - Seated - #102", "Inclined Chest Press (Precor)"], name: "Incline Chest Press (Precor)", machine: "Precor", refNote: "70 lbs per side", alternateIds: ["e65"] },
+        emu8k4a5z8gwzw: { oldMachine: "GGD", machine: "GHD" },
+        emu9w7wa26gqat: { oldMachine: "Band. Barbell", machine: "Band + Barbell" },
+        emu9wq36v62mcb: { oldName: "Gluten Ham Raise", name: "Glute Ham Raise" },
+      };
+      const PROGRAM_PATCHES = {
+        p6: { oldIds: ["e74", "e75", "e76", "e77"], newIds: ["e74", "e75", "e76", "alt7", "e77"] },
+        p9: { oldIds: ["e47", "e48", "e49"], newIds: ["e47", "e48", "e49", "alt9"] },
+        p2: { oldIds: ["e50", "e51", "e52", "e53", "e54", "e55"], newIds: ["e50", "e93", "e52", "e53", "e54", "e55"] },
+      };
+      const ENSURE_LINKS = [
+        ["e14", "e36"],
+        ["e8", "e36"],
+        ["e9", "e36"],
+        ["e8", "e9"],
+        ["e51", "e93"],
+        ["alt1", "e93"],
+        ["alt2", "e93"],
+        ["e2", "e38"],
+        ["e65", "e92"],
+        ["e65", "alt8"],
+        ["e11", "e30"],
+        ["e11", "e14"],
+        ["e11", "e36"],
+        ["e11", "e20"],
+        ["e11", "e41"],
+        ["e11", "e3"],
+        ["e2", "e32"],
+        ["e2", "e34"],
+        ["e2", "e12"],
+        ["e2", "emu8k4a5z8gwzw"],
+        ["e3", "e8"],
+        ["e3", "e9"],
+        ["e3", "e36"],
+        ["e3", "e14"],
+        ["e3", "e20"],
+        ["e4", "e29"],
+        ["e4", "e95"],
+        ["e4", "e20"],
+        ["e4", "e40"],
+        ["e4", "e41"],
+        ["e5", "e15"],
+        ["e5", "e31"],
+        ["e6", "e13"],
+        ["e6", "e33"],
+        ["e1", "e12"],
+        ["e1", "emu8k4a5z8gwzw"],
+        ["e1", "e34"],
+        ["e1", "e38"],
+        ["e8", "e14"],
+        ["e8", "e11"],
+        ["e9", "e14"],
+        ["e10", "e94"],
+        ["e10", "e32"],
+        ["e10", "e12"],
+        ["e10", "emu8k4a5z8gwzw"],
+        ["e10", "e20"],
+        ["e12", "e32"],
+        ["e13", "e33"],
+        ["e13", "alt10"],
+        ["e7", "e11"],
+        ["e7", "e21"],
+        ["e66", "e75"],
+        ["e66", "e76"],
+        ["e75", "e76"],
+        ["e67", "e76"],
+        ["e66", "e67"],
+        ["e67", "e75"],
+        ["e68", "e77"],
+        ["e68", "e69"],
+        ["e69", "e77"],
+        ["e68", "alt7"],
+        ["e68", "e74"],
+        ["e74", "e90"],
+        ["e74", "e69"],
+        ["e90", "e68"],
+        ["e90", "e69"],
+        ["e47", "e59"],
+        ["e47", "e88"],
+        ["e59", "e88"],
+        ["e47", "e49"],
+        ["e49", "e59"],
+        ["e47", "e58"],
+        ["e58", "e88"],
+        ["e48", "e58"],
+        ["e48", "e57"],
+        ["e57", "e58"],
+        ["e48", "e56"],
+        ["e56", "e69"],
+        ["e56", "e60"],
+        ["e60", "e69"],
+        ["e60", "e77"],
+        ["e55", "e70"],
+        ["e43", "alt1"],
+        ["e43", "e85"],
+        ["e85", "e54"],
+        ["e43", "e54"],
+        ["e54", "alt1"],
+        ["e43", "e55"],
+        ["e54", "e55"],
+        ["e85", "e51"],
+        ["e44", "e52"],
+        ["e44", "e78"],
+        ["e52", "e78"],
+        ["e44", "e70"],
+        ["e52", "e70"],
+        ["e78", "e70"],
+        ["e44", "alt3"],
+        ["e52", "alt3"],
+        ["e45", "e46"],
+        ["e45", "e78"],
+        ["e46", "e57"],
+        ["e50", "e53"],
+        ["e51", "e83"],
+        ["e83", "alt1"],
+        ["e83", "e93"],
+        ["e61", "e91"],
+        ["e61", "e73"],
+        ["e61", "e64"],
+        ["e91", "e73"],
+        ["e91", "e71"],
+        ["e62", "e72"],
+        ["e62", "e71"],
+        ["e62", "e73"],
+        ["e72", "e71"],
+        ["e72", "e73"],
+        ["e63", "e89"],
+        ["e63", "e64"],
+        ["e64", "e89"],
+        ["e80", "e96"],
+        ["e80", "e86"],
+        ["e86", "e96"],
+        ["e80", "e81"],
+        ["e86", "e81"],
+        ["e82", "e100"],
+        ["e84", "e98"],
+        ["e84", "e50"],
+        ["e84", "e53"],
+        ["e98", "e50"],
+        ["e98", "e53"],
+        ["e97", "e99"],
+        ["e87", "e53"],
+        ["e87", "e97"],
+        ["e23", "e24"],
+        ["e16", "e26"],
+        ["e25", "emu5o2pdv2nda9"],
+        ["e17", "e16"],
+        ["e27", "e17"],
+        ["e28", "e23"],
+        ["emubvaklw3nw18", "e69"],
+        ["emubvaklw3nw18", "alt7"],
+        ["emubvaklw3nw18", "e60"],
+        ["emubvaklw3nw18", "e56"],
+      ];
+      const REMOVE_LINKS = [["e76", "e84"]];
+      const DELETE_EXERCISE_IDS = ["e37", "e22", "e79"];
+      const WARMUP_SCHEME_DEFAULT = [
+        { pct: 40, reps: 8 },
+        { pct: 60, reps: 5 },
+        { pct: 80, reps: 2 },
+        { pct: 90, reps: 1, optional: true },
+      ];
+      const FIELD_DEFAULTS = {
+        e2: { warmupScheme: WARMUP_SCHEME_DEFAULT, warmupBase: 468 },
+        e8: { warmupScheme: WARMUP_SCHEME_DEFAULT, warmupBase: 421 },
+      };
+      const PR_CORRECTIONS = {
+        e2: {
+          oldSeedPR: 425,
+          seedPR: 435,
+          refNote: "Warm-up: 8x40%, 5x60%, 2x80%, opt 1x90%. Work: 3x5x80%. Baseline for warm-ups: 468 (4/1/26). PR435 (4/1/26)",
+        },
+        e8: {
+          oldSeedPR: 315,
+          seedPR: 355,
+          refNote: "Baseline 435 (70%=135x2). Baseline for warm-ups: 188/side + 45 bar = 421 (3/21/26). Warm-up: 8x40%, 5x60%, 2x80%, opt 1x90%. Work: 3x7x70%. PR355 (4/25/26)",
+        },
+      };
+      if (!ex) {
+        ex = [...SEED_EXERCISES, ...SUGGESTED_EXERCISES];
+        await storageSet("ironledger:exercises", ex);
+      } else {
+        const existingIds = new Set(ex.map((e) => e.id));
+        const missing = [...SEED_EXERCISES, ...SUGGESTED_EXERCISES].filter((e) => !existingIds.has(e.id));
+        let changed = missing.length > 0;
+        if (missing.length > 0) ex = [...ex, ...missing];
+        if (ex.some((e) => DELETE_EXERCISE_IDS.includes(e.id))) {
+          ex = ex.filter((e) => !DELETE_EXERCISE_IDS.includes(e.id));
+          changed = true;
+        }
+        ex = ex.map((e) => {
+          const patch = SEED_PATCHES[e.id];
+          const nameOk = !patch || patch.oldName === undefined || (Array.isArray(patch.oldName) ? patch.oldName.includes(e.name) : e.name === patch.oldName);
+          const refOk = !patch || patch.oldRefNote === undefined || e.refNote === patch.oldRefNote;
+          const machineOk = !patch || patch.oldMachine === undefined || e.machine === patch.oldMachine;
+          if (patch && nameOk && refOk && machineOk) {
+            changed = true;
+            const { oldName, oldRefNote, oldMachine, ...fields } = patch;
+            return { ...e, ...fields };
+          }
+          return e;
+        });
+        const idSet = new Set(ex.map((e) => e.id));
+        ex = ex.map((e) => {
+          let alt = e.alternateIds || [];
+          ENSURE_LINKS.forEach(([a, b]) => {
+            if (!idSet.has(a) || !idSet.has(b)) return;
+            if (e.id === a && !alt.includes(b)) {
+              alt = [...alt, b];
+              changed = true;
+            }
+            if (e.id === b && !alt.includes(a)) {
+              alt = [...alt, a];
+              changed = true;
+            }
+          });
+          REMOVE_LINKS.forEach(([a, b]) => {
+            if (e.id === a && alt.includes(b)) {
+              alt = alt.filter((x) => x !== b);
+              changed = true;
+            }
+            if (e.id === b && alt.includes(a)) {
+              alt = alt.filter((x) => x !== a);
+              changed = true;
+            }
+          });
+          return alt === (e.alternateIds || []) ? e : { ...e, alternateIds: alt };
+        });
+        ex = ex.map((e) => {
+          const fd = FIELD_DEFAULTS[e.id];
+          if (!fd) return e;
+          const patch = {};
+          Object.keys(fd).forEach((k) => {
+            if (e[k] === undefined) patch[k] = fd[k];
+          });
+          if (Object.keys(patch).length === 0) return e;
+          changed = true;
+          return { ...e, ...patch };
+        });
+        ex = ex.map((e) => {
+          const pc = PR_CORRECTIONS[e.id];
+          if (pc && e.seedPR === pc.oldSeedPR) {
+            changed = true;
+            return { ...e, seedPR: pc.seedPR, refNote: pc.refNote };
+          }
+          return e;
+        });
+        if (changed) await storageSet("ironledger:exercises", ex);
+      }
+      if (!pr) {
+        pr = SEED_PROGRAMS;
+        await storageSet("ironledger:programs", pr);
+      } else {
+        let prChanged = false;
+        const existingProgramIds = new Set(pr.map((p) => p.id));
+        const missingPrograms = SEED_PROGRAMS.filter((p) => !existingProgramIds.has(p.id));
+        if (missingPrograms.length > 0) {
+          pr = [...pr, ...missingPrograms];
+          prChanged = true;
+        }
+        pr = pr.map((p) => {
+          const patch = PROGRAM_PATCHES[p.id];
+          if (patch && JSON.stringify(p.exerciseIds) === JSON.stringify(patch.oldIds)) {
+            prChanged = true;
+            return { ...p, exerciseIds: patch.newIds };
+          }
+          return p;
+        });
+        pr = pr.map((p) => {
+          if (p.id === "p7" && p.archived) {
+            prChanged = true;
+            return { ...p, archived: false };
+          }
+          return p;
+        });
+        if (prChanged) await storageSet("ironledger:programs", pr);
+      }
+      if (!lg) {
+        lg = [];
+        await storageSet("ironledger:logs", lg);
+      }
+      setExercises(ex);
+      setPrograms(pr);
+      setLogs(lg);
+      setDraft(dr);
+      setLoaded(true);
+    })();
+  }, []);
+
+  const exerciseById = useMemo(() => {
+    const m = {};
+    exercises.forEach((e) => (m[e.id] = e));
+    return m;
+  }, [exercises]);
+
+  const programById = useMemo(() => {
+    const m = {};
+    programs.forEach((p) => (m[p.id] = p));
+    return m;
+  }, [programs]);
+
+  const persistExercises = async (next) => {
+    setExercises(next);
+    await storageSet("ironledger:exercises", next);
+  };
+  const persistPrograms = async (next) => {
+    setPrograms(next);
+    await storageSet("ironledger:programs", next);
+  };
+  const persistLogs = async (next) => {
+    setLogs(next);
+    await storageSet("ironledger:logs", next);
+  };
+  const persistDraft = async (next) => {
+    setDraft(next);
+    if (next) await storageSet("ironledger:draft", next);
+    else await storageDelete("ironledger:draft");
+  };
+
+  const history = useMemo(() => {
+    const byExercise = {};
+    logs.forEach((l) => {
+      if (!byExercise[l.exerciseId]) byExercise[l.exerciseId] = [];
+      byExercise[l.exerciseId].push(l);
+    });
+    Object.values(byExercise).forEach((arr) => arr.sort((a, b) => (a.date < b.date ? 1 : -1)));
+    return byExercise;
+  }, [logs]);
+
+  const getStats = (exerciseId) => {
+    const entries = history[exerciseId] || [];
+    let prStraight = null;
+    let prDS = null;
+    let last = null;
+    const ex = exerciseById[exerciseId];
+    if (ex && typeof ex.seedPR === "number") prStraight = ex.seedPR;
+    entries.forEach((entry) => {
+      entry.sets.forEach((s) => {
+        repValues(s).forEach((w) => {
+          if (s.kind === "DS") {
+            if (prDS === null || w > prDS) prDS = w;
+          } else {
+            if (prStraight === null || w > prStraight) prStraight = w;
+          }
+        });
+      });
+    });
+    if (entries.length > 0) last = entries[0];
+    return { prStraight, prDS, last };
+  };
+
+  if (!loaded) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-neutral-950 text-neutral-400 text-sm">
+        Loading your log...
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-neutral-950 text-neutral-100 flex flex-col" style={{ fontFamily: "system-ui, -apple-system, sans-serif" }}>
+      <header className="px-4 pt-5 pb-3 border-b border-neutral-800 flex items-center justify-between">
+        <div>
+          <div className="text-[11px] tracking-wide text-amber-500 font-semibold uppercase">Iron Ledger</div>
+          <div className="text-lg font-semibold leading-tight">
+            {tab === "today" && "Today's session"}
+            {tab === "programs" && "Workouts"}
+            {tab === "library" && "Exercise library"}
+            {tab === "history" && "History"}
+          </div>
+        </div>
+        <div className="text-right text-xs text-neutral-500">{formatDate(todayStr())}</div>
+      </header>
+
+      <main className="flex-1 overflow-y-auto pb-20">
+        {tab === "today" && (
+          <TodayView
+            exercises={exercises}
+            setExercises={persistExercises}
+            programs={programs}
+            draft={draft}
+            setDraft={persistDraft}
+            logs={logs}
+            setLogs={persistLogs}
+            getStats={getStats}
+            exerciseById={exerciseById}
+          />
+        )}
+        {tab === "programs" && (
+          <ProgramsView
+            programs={programs}
+            setPrograms={persistPrograms}
+            exercises={exercises}
+            exerciseById={exerciseById}
+            openProgram={(id) => {
+              setDetailProgramId(id);
+              setTab("program-detail");
+            }}
+          />
+        )}
+        {tab === "program-detail" && detailProgramId && (
+          <ProgramDetailView
+            program={programById[detailProgramId]}
+            programs={programs}
+            setPrograms={persistPrograms}
+            exercises={exercises}
+            exerciseById={exerciseById}
+            onBack={() => setTab("programs")}
+          />
+        )}
+        {tab === "library" && (
+          <LibraryView
+            exercises={exercises}
+            setExercises={persistExercises}
+            programs={programs}
+            setPrograms={persistPrograms}
+            logs={logs}
+            setLogs={persistLogs}
+            getStats={getStats}
+            openExercise={(id) => {
+              setDetailExerciseId(id);
+              setTab("exercise-detail");
+            }}
+          />
+        )}
+        {tab === "exercise-detail" && detailExerciseId && (
+          <ExerciseDetailView
+            exercise={exerciseById[detailExerciseId]}
+            exercises={exercises}
+            setExercises={persistExercises}
+            history={history[detailExerciseId] || []}
+            getStats={getStats}
+            logs={logs}
+            setLogs={persistLogs}
+            programs={programs}
+            setPrograms={persistPrograms}
+            onBack={() => setTab("library")}
+          />
+        )}
+        {tab === "history" && <HistoryView logs={logs} setLogs={persistLogs} exerciseById={exerciseById} programById={programById} />}
+      </main>
+
+      <nav className="fixed bottom-0 left-0 right-0 bg-neutral-950 border-t border-neutral-800 flex justify-around py-2 max-w-full">
+        <NavButton icon={Dumbbell} label="Today" active={tab === "today"} onClick={() => setTab("today")} />
+        <NavButton icon={ListChecks} label="Workouts" active={tab === "programs" || tab === "program-detail"} onClick={() => setTab("programs")} />
+        <NavButton icon={Library} label="Library" active={tab === "library" || tab === "exercise-detail"} onClick={() => setTab("library")} />
+        <NavButton icon={History} label="History" active={tab === "history"} onClick={() => setTab("history")} />
+      </nav>
+    </div>
+  );
+}
+
+function NavButton({ icon: Icon, label, active, onClick }) {
+  return (
+    <button onClick={onClick} className={`flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg ${active ? "text-amber-500" : "text-neutral-500"}`}>
+      <Icon size={20} strokeWidth={active ? 2.2 : 1.8} />
+      <span className="text-[11px]">{label}</span>
+    </button>
+  );
+}
+
+function Badge({ children, tone = "neutral" }) {
+  const tones = {
+    neutral: "bg-neutral-800 text-neutral-300",
+    amber: "bg-amber-900/40 text-amber-400",
+    teal: "bg-teal-900/40 text-teal-400",
+    red: "bg-red-900/40 text-red-400",
+    purple: "bg-purple-900/40 text-purple-400",
+    alt: "bg-sky-900/40 text-sky-400",
+    orange: "bg-orange-900/40 text-orange-400",
+  };
+  return <span className={`text-[11px] px-2 py-0.5 rounded-md ${tones[tone]}`}>{children}</span>;
+}
+
+function TodayView({ exercises, setExercises, programs, draft, setDraft, logs, setLogs, getStats, exerciseById }) {
+  const [pickerOpen, setPickerOpen] = useState(!draft);
+  const [selectedPrograms, setSelectedPrograms] = useState([]);
+  const [swapTarget, setSwapTarget] = useState(null);
+  const [confirmDiscard, setConfirmDiscard] = useState(false);
+  const [openKeys, setOpenKeys] = useState({});
+  const toggleCollapsed = (key) => setOpenKeys((prev) => ({ ...prev, [key]: !prev[key] }));
+  const cardRefs = useRef({});
+
+  const jumpTo = (key) => {
+    cardRefs.current[key]?.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
+
+  const clearNextFlag = (exerciseId) => {
+    setExercises(exercises.map((e) => (e.id === exerciseId ? { ...e, nextTimeNote: "" } : e)));
+  };
+
+  const setNextFlag = (exerciseId) => {
+    setExercises(exercises.map((e) => (e.id === exerciseId ? { ...e, nextTimeNote: "Increase weight" } : e)));
+  };
+
+  const activePrograms = programs.filter((p) => !p.archived);
+
+  const presetSets = (exerciseId) => {
+    const stats = getStats(exerciseId);
+    if (!stats.last) return [];
+    return stats.last.sets.map((s) => ({
+      weight: s.split ? "" : s.weight !== undefined ? String(s.weight) : "",
+      kind: s.kind || "straight",
+      split: !!s.split,
+      left: s.split && s.left !== undefined ? String(s.left) : "",
+      right: s.split && s.right !== undefined ? String(s.right) : "",
+      reps: s.reps || "",
+      confirmed: false,
+    }));
+  };
+
+  const beginSession = (extraExerciseIds = []) => {
+    const chosen = programs.filter((p) => selectedPrograms.includes(p.id));
+    const entries = [];
+    const seen = new Set();
+    chosen.forEach((p) => {
+      p.exerciseIds.forEach((eid) => {
+        if (seen.has(eid)) return;
+        seen.add(eid);
+        entries.push({ key: uid("en"), exerciseId: eid, plannedExerciseId: null, programId: p.id, sets: presetSets(eid) });
+      });
+    });
+    extraExerciseIds.forEach((eid) => {
+      if (seen.has(eid)) return;
+      seen.add(eid);
+      entries.push({ key: uid("en"), exerciseId: eid, plannedExerciseId: null, programId: null, sets: presetSets(eid) });
+    });
+    setDraft({ date: todayStr(), programIds: selectedPrograms, entries });
+    setPickerOpen(false);
+  };
+
+  const updateEntry = (key, updater) => {
+    const next = { ...draft, entries: draft.entries.map((e) => (e.key === key ? updater(e) : e)) };
+    setDraft(next);
+  };
+
+  const removeEntry = (key) => {
+    setDraft({ ...draft, entries: draft.entries.filter((e) => e.key !== key) });
+  };
+
+  const addSet = (key) => {
+    updateEntry(key, (e) => {
+      const prev = e.sets[e.sets.length - 1];
+      const next = prev
+        ? { weight: prev.weight, kind: prev.kind, split: prev.split, left: prev.left, right: prev.right, reps: prev.reps, confirmed: false }
+        : { weight: "", kind: "straight", split: false, left: "", right: "", reps: "", confirmed: false };
+      return { ...e, sets: [...e.sets, next] };
+    });
+  };
+  const updateSet = (key, idx, field, value) => {
+    updateEntry(key, (e) => ({
+      ...e,
+      sets: e.sets.map((s, i) => (i === idx ? { ...s, [field]: value, confirmed: field === "confirmed" ? value : false } : s)),
+    }));
+  };
+  const removeSet = (key, idx) => {
+    updateEntry(key, (e) => ({ ...e, sets: e.sets.filter((_, i) => i !== idx) }));
+  };
+
+  const toggleSplit = (key, idx) => {
+    updateEntry(key, (e) => ({
+      ...e,
+      sets: e.sets.map((s, i) => {
+        if (i !== idx) return s;
+        if (!s.split) {
+          // turning split ON: carry the single weight into both sides as a starting point
+          return { ...s, split: true, left: s.weight || "", right: s.weight || "", confirmed: false };
+        }
+        // turning split OFF: carry the left value forward so nothing typed is lost
+        return { ...s, split: false, weight: s.left || s.right || "", left: "", right: "", confirmed: false };
+      }),
+    }));
+  };
+
+  const confirmRow = (key, idx) => {
+    updateEntry(key, (e) => ({
+      ...e,
+      sets: e.sets.map((s, i) => {
+        if (i !== idx) return s;
+        if (s.confirmed) return { ...s, confirmed: false };
+        return s.split ? { ...s, confirmed: true, weight: "" } : { ...s, confirmed: true, left: "", right: "" };
+      }),
+    }));
+  };
+
+  const addAdHocExercise = (exerciseId) => {
+    if (!draft) {
+      setDraft({ date: todayStr(), programIds: [], entries: [{ key: uid("en"), exerciseId, plannedExerciseId: null, programId: null, sets: presetSets(exerciseId) }] });
+      setPickerOpen(false);
+      return;
+    }
+    setDraft({ ...draft, entries: [...draft.entries, { key: uid("en"), exerciseId, plannedExerciseId: null, programId: null, sets: presetSets(exerciseId) }] });
+  };
+
+  const doSwap = (key, newExerciseId) => {
+    updateEntry(key, (e) => ({
+      ...e,
+      plannedExerciseId: e.plannedExerciseId || e.exerciseId,
+      exerciseId: newExerciseId,
+      sets: presetSets(newExerciseId),
+    }));
+    setSwapTarget(null);
+  };
+
+  const finishSession = () => {
+    const newLogs = [];
+    draft.entries.forEach((e) => {
+      const validSets = e.sets.filter((s) => (s.split ? s.left !== "" || s.right !== "" : s.weight !== "" && s.weight !== null));
+      const hasNote = e.note && e.note.trim() !== "";
+      if (validSets.length === 0 && !hasNote) return;
+      newLogs.push({
+        id: uid("log"),
+        date: draft.date,
+        exerciseId: e.exerciseId,
+        plannedExerciseId: e.plannedExerciseId,
+        programIds: draft.programIds,
+        sets: validSets.map((s) =>
+          s.split
+            ? { split: true, left: s.left, right: s.right, kind: s.kind }
+            : { weight: parseFloat(s.weight), kind: s.kind, reps: s.reps }
+        ),
+        note: hasNote ? e.note.trim() : "",
+        ts: Date.now(),
+      });
+    });
+    setLogs([...logs, ...newLogs]);
+    setDraft(null);
+    setPickerOpen(true);
+    setSelectedPrograms([]);
+  };
+
+  const discardSession = () => {
+    setDraft(null);
+    setPickerOpen(true);
+    setSelectedPrograms([]);
+    setConfirmDiscard(false);
+  };
+
+  if (pickerOpen || !draft) {
+    return (
+      <div className="px-4 py-4 space-y-4">
+        <p className="text-sm text-neutral-400">Pick one or more workouts for today. You can add extra exercises once you're in.</p>
+        <div className="space-y-2">
+          {activePrograms.map((p) => {
+            const isSel = selectedPrograms.includes(p.id);
+            return (
+              <button
+                key={p.id}
+                onClick={() => setSelectedPrograms((s) => (isSel ? s.filter((x) => x !== p.id) : [...s, p.id]))}
+                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border text-left ${
+                  isSel ? "border-amber-500 bg-amber-900/10" : "border-neutral-800 bg-neutral-900"
+                }`}
+              >
+                <div>
+                  <div className="font-medium text-sm">{p.name}</div>
+                  <div className="text-xs text-neutral-500">{p.exerciseIds.length} exercises</div>
+                </div>
+                {isSel ? <Check size={18} className="text-amber-500" /> : <ChevronRight size={18} className="text-neutral-600" />}
+              </button>
+            );
+          })}
+          {activePrograms.length === 0 && <p className="text-sm text-neutral-500">No workouts yet. Create one in the Workouts tab.</p>}
+        </div>
+        <button
+          disabled={selectedPrograms.length === 0}
+          onClick={() => beginSession()}
+          className={`w-full py-3 rounded-xl font-medium text-sm ${
+            selectedPrograms.length === 0 ? "bg-neutral-800 text-neutral-600" : "bg-amber-500 text-neutral-950"
+          }`}
+        >
+          Start session {selectedPrograms.length > 0 ? `(${selectedPrograms.length} workout${selectedPrograms.length > 1 ? "s" : ""})` : ""}
+        </button>
+        {draft && (
+          <button onClick={() => setPickerOpen(false)} className="w-full py-2.5 rounded-xl text-sm text-neutral-400 border border-neutral-800">
+            Back to in-progress session
+          </button>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="px-4 py-4 space-y-3">
+      <div className="flex items-center justify-between">
+        <div className="text-xs text-neutral-500">
+          {draft.programIds.map((pid) => programs.find((p) => p.id === pid)?.name).filter(Boolean).join(" + ") || "Freestyle session"}
+        </div>
+        <AddExercisePicker exercises={exercises} onPick={addAdHocExercise} label="Add exercise" getStats={getStats} />
+      </div>
+
+      {draft.entries.length > 1 && (
+        <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-4 px-4">
+          {draft.entries.map((entry) => {
+            const ex = exerciseById[entry.exerciseId];
+            if (!ex) return null;
+            const hasData = entry.sets.some((s) => (s.split ? s.left !== "" || s.right !== "" : s.weight !== "" && s.weight !== null));
+            return (
+              <button
+                key={entry.key}
+                onClick={() => jumpTo(entry.key)}
+                className={`shrink-0 text-xs px-2.5 py-1.5 rounded-lg border whitespace-nowrap flex items-center gap-1 ${
+                  hasData ? "border-teal-700 bg-teal-900/20 text-teal-400" : "border-neutral-700 bg-neutral-900 text-neutral-400"
+                }`}
+              >
+                {hasData && <Check size={11} />}
+                {ex.name}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {draft.entries.map((entry) => {
+        const ex = exerciseById[entry.exerciseId];
+        if (!ex) return null;
+        const stats = getStats(entry.exerciseId);
+        return (
+          <div key={entry.key} ref={(el) => (cardRefs.current[entry.key] = el)} className="bg-neutral-900 border border-neutral-800 rounded-xl p-3 space-y-2">
+            {ex.nextTimeNote && (
+              <button
+                onClick={() => clearNextFlag(ex.id)}
+                className="w-full flex items-center justify-between gap-2 bg-amber-900/30 border border-amber-700/50 text-amber-300 text-xs px-2.5 py-1.5 rounded-lg text-left"
+              >
+                <span>⚡ {ex.nextTimeNote}</span>
+                <span className="text-[10px] text-amber-500 shrink-0">Tap to clear</span>
+              </button>
+            )}
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <div className="font-medium text-sm">{ex.name}</div>
+                  {ex.suggested && <Badge tone="purple">Suggested</Badge>}
+                </div>
+                <div className="text-xs text-neutral-500">
+                  {ex.machine ? `${ex.machine} · ` : ""}
+                  {ex.defaultSets && ex.defaultReps ? `${ex.defaultSets} x ${ex.defaultReps}` : ""}
+                </div>
+                {entry.plannedExerciseId && (
+                  <div className="text-[11px] text-teal-500 mt-0.5">Swapped in for {exerciseById[entry.plannedExerciseId]?.name}</div>
+                )}
+                {(ex.supersetWith || []).length > 0 && (
+                  <div className="text-[11px] text-orange-400 mt-0.5">
+                    Superset with: {(ex.supersetWith || []).map((id) => exerciseById[id]?.name).filter(Boolean).join(", ")}
+                  </div>
+                )}
+              </div>
+              <div className="flex gap-1 shrink-0">
+                <button
+                  onClick={() => toggleCollapsed(entry.key)}
+                  className="p-1.5 rounded-lg bg-neutral-800 text-neutral-400"
+                  aria-label={openKeys[entry.key] ? "Minimize exercise" : "Expand exercise"}
+                >
+                  {openKeys[entry.key] ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
+                </button>
+                <button onClick={() => setSwapTarget(entry.key)} className="p-1.5 rounded-lg bg-neutral-800 text-neutral-400" aria-label="Swap exercise">
+                  <ArrowLeftRight size={15} />
+                </button>
+                <button onClick={() => removeEntry(entry.key)} className="p-1.5 rounded-lg bg-neutral-800 text-neutral-400" aria-label="Remove exercise">
+                  <X size={15} />
+                </button>
+              </div>
+            </div>
+
+            <div className="flex gap-2 flex-wrap">
+              {stats.prStraight !== null && <Badge tone="amber">PR {stats.prStraight}</Badge>}
+              {stats.prDS !== null && <Badge tone="amber">PR DS {stats.prDS}</Badge>}
+              {stats.last ? (
+                <Badge tone="teal">
+                  Last {stats.last.sets.map((s) => formatRep(s)).join(", ")} on {formatDate(stats.last.date)}
+                </Badge>
+              ) : ex.refNote ? (
+                <Badge>Sheet ref: {ex.refNote}</Badge>
+              ) : null}
+            </div>
+
+            {openKeys[entry.key] ? (
+            <React.Fragment>
+            {ex.warmupScheme && (
+              <WarmupBlock ex={ex} entry={entry} stats={stats} updateEntry={updateEntry} />
+            )}
+
+            <div className="space-y-1.5">
+              {entry.sets.map((s, i) => (
+                <div key={i} className={`rounded-lg p-1.5 ${s.confirmed ? "bg-teal-950/30 border border-teal-800/60" : ""}`}>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs text-neutral-500 w-4 shrink-0">{i + 1}</span>
+                    {s.split ? (
+                      <div className="flex gap-1">
+                        <input
+                          type="number"
+                          inputMode="decimal"
+                          placeholder="L"
+                          value={s.left}
+                          onChange={(ev) => updateSet(entry.key, i, "left", ev.target.value)}
+                          className={`w-16 rounded-lg px-2 py-1.5 text-sm border ${s.confirmed ? "bg-teal-950/40 border-teal-800 text-teal-100" : "bg-neutral-800 border-neutral-700"}`}
+                        />
+                        <input
+                          type="number"
+                          inputMode="decimal"
+                          placeholder="R"
+                          value={s.right}
+                          onChange={(ev) => updateSet(entry.key, i, "right", ev.target.value)}
+                          className={`w-16 rounded-lg px-2 py-1.5 text-sm border ${s.confirmed ? "bg-teal-950/40 border-teal-800 text-teal-100" : "bg-neutral-800 border-neutral-700"}`}
+                        />
+                      </div>
+                    ) : (
+                      <input
+                        type="number"
+                        inputMode="decimal"
+                        placeholder="Weight"
+                        value={s.weight}
+                        onChange={(ev) => updateSet(entry.key, i, "weight", ev.target.value)}
+                        maxLength={7}
+                        className={`w-20 rounded-lg px-2 py-1.5 text-sm border ${s.confirmed ? "bg-teal-950/40 border-teal-800 text-teal-100" : "bg-neutral-800 border-neutral-700"}`}
+                      />
+                    )}
+                    <input
+                      type="number"
+                      inputMode="numeric"
+                      placeholder="Reps"
+                      value={s.reps}
+                      onChange={(ev) => updateSet(entry.key, i, "reps", ev.target.value)}
+                      className={`w-14 rounded-lg px-1.5 py-1.5 text-sm border text-center ${s.confirmed ? "bg-teal-950/40 border-teal-800 text-teal-100" : "bg-neutral-800 border-neutral-700"}`}
+                    />
+                  </div>
+                  <div className="flex items-center gap-1.5 mt-1 pl-6">
+                    <button
+                      onClick={() => toggleSplit(entry.key, i)}
+                      aria-label="Toggle left/right weight"
+                      className={`text-[10px] px-1.5 py-1.5 rounded-lg border shrink-0 ${s.split ? "border-teal-500 text-teal-500" : "border-neutral-700 text-neutral-500"}`}
+                    >
+                      L/R
+                    </button>
+                    <div className="flex bg-neutral-800 rounded-lg border border-neutral-700 overflow-hidden text-xs shrink-0">
+                      <button
+                        onClick={() => updateSet(entry.key, i, "kind", "straight")}
+                        className={`px-2 py-1.5 ${s.kind === "straight" ? "bg-amber-500 text-neutral-950" : "text-neutral-400"}`}
+                      >
+                        S
+                      </button>
+                      <button
+                        onClick={() => updateSet(entry.key, i, "kind", "DS")}
+                        className={`px-2 py-1.5 ${s.kind === "DS" ? "bg-amber-500 text-neutral-950" : "text-neutral-400"}`}
+                      >
+                        DS
+                      </button>
+                    </div>
+                    <div className="flex-1" />
+                    <button
+                      onClick={() => confirmRow(entry.key, i)}
+                      aria-label={s.confirmed ? "Confirmed" : "Confirm this row"}
+                      className={`p-1.5 rounded-lg shrink-0 ${s.confirmed ? "text-teal-400" : "text-neutral-600"}`}
+                    >
+                      <Check size={16} />
+                    </button>
+                    <button onClick={() => removeSet(entry.key, i)} className="text-neutral-600 p-1.5 shrink-0" aria-label="Remove rep">
+                      <X size={14} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <p className="text-[11px] text-neutral-600 pl-6 -mt-1">
+              Reps defaults to blank (assume you hit the target) — fill it in if you came up short. Tap L/R to log a different weight per arm or leg. Tap ✓ to lock in a row — editing it again unlocks it.
+            </p>
+            <div className="flex items-center justify-between pt-1">
+              <button onClick={() => addSet(entry.key)} className="text-xs text-amber-500 flex items-center gap-1">
+                <Plus size={13} /> Add rep
+              </button>
+              {!ex.nextTimeNote && (
+                <button onClick={() => setNextFlag(ex.id)} className="text-xs text-neutral-500 flex items-center gap-1">
+                  ⚡ Increase next time
+                </button>
+              )}
+            </div>
+            </React.Fragment>
+            ) : null}
+
+            {swapTarget === entry.key && (
+              <SwapPanel
+                exercises={exercises}
+                currentExercise={ex}
+                onPick={(newId) => doSwap(entry.key, newId)}
+                onClose={() => setSwapTarget(null)}
+                getStats={getStats}
+              />
+            )}
+
+            <textarea
+              value={entry.note || ""}
+              onChange={(ev) => updateEntry(entry.key, (e) => ({ ...e, note: ev.target.value }))}
+              placeholder="Notes for today (form cue, pain, machine setting...)"
+              rows={1}
+              className="w-full bg-neutral-800 rounded-lg px-2.5 py-1.5 text-xs border border-neutral-700 text-neutral-300 placeholder-neutral-600 resize-none"
+            />
+          </div>
+        );
+      })}
+
+      {draft.entries.length === 0 && <p className="text-sm text-neutral-500 text-center py-6">No exercises yet. Add one above.</p>}
+
+      <div className="flex gap-2 pt-2">
+        {confirmDiscard ? (
+          <>
+            <span className="flex-1 text-xs text-red-400 flex items-center justify-center px-2">Discard this whole session?</span>
+            <button onClick={() => setConfirmDiscard(false)} className="flex-1 py-3 rounded-xl border border-neutral-800 text-neutral-400 text-sm">
+              Cancel
+            </button>
+            <button onClick={discardSession} className="flex-1 py-3 rounded-xl bg-red-600 text-white text-sm font-medium">
+              Yes, discard
+            </button>
+          </>
+        ) : (
+          <>
+            <button onClick={() => setConfirmDiscard(true)} className="flex-1 py-3 rounded-xl border border-neutral-800 text-neutral-400 text-sm flex items-center justify-center gap-1.5">
+              <Ban size={15} /> Discard
+            </button>
+            <button onClick={finishSession} className="flex-1 py-3 rounded-xl bg-amber-500 text-neutral-950 font-medium text-sm flex items-center justify-center gap-1.5">
+              <Save size={15} /> Finish & save
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function SwapPanel({ exercises, currentExercise, onPick, onClose, getStats }) {
+  const [query, setQuery] = useState("");
+  const [allGroups, setAllGroups] = useState(false);
+  const currentMuscleGroup = currentExercise.muscleGroup;
+  const alternateIds = currentExercise.alternateIds || [];
+  const matchesQuery = (e) => !query || e.name.toLowerCase().includes(query.toLowerCase());
+
+  const pinned = exercises
+    .filter((e) => !e.archived && alternateIds.includes(e.id) && matchesQuery(e))
+    .sort((a, b) => alternateIds.indexOf(a.id) - alternateIds.indexOf(b.id));
+  const pinnedIds = new Set(pinned.map((e) => e.id));
+  const rest = sortExercises(
+    exercises.filter((e) => {
+      if (e.archived || pinnedIds.has(e.id)) return false;
+      if (!allGroups && e.muscleGroup !== currentMuscleGroup) return false;
+      if (!matchesQuery(e)) return false;
+      return true;
+    }),
+    getStats
+  );
+  const filtered = [...pinned, ...rest];
+  return (
+    <div className="border-t border-neutral-800 pt-2 mt-1 space-y-2">
+      <div className="flex items-center gap-2">
+        <div className="relative flex-1">
+          <Search size={13} className="absolute left-2 top-1/2 -translate-y-1/2 text-neutral-600" />
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search replacement"
+            className="w-full bg-neutral-800 rounded-lg pl-7 pr-2 py-1.5 text-sm border border-neutral-700"
+          />
+        </div>
+        <button onClick={() => setAllGroups((v) => !v)} className={`text-[11px] px-2 py-1.5 rounded-lg border ${allGroups ? "border-amber-500 text-amber-500" : "border-neutral-700 text-neutral-500"}`}>
+          All groups
+        </button>
+        <button onClick={onClose} className="p-1.5 text-neutral-500">
+          <X size={15} />
+        </button>
+      </div>
+      <div className="max-h-48 overflow-y-auto space-y-1">
+        {filtered.slice(0, 30).map((e) => (
+          <button key={e.id} onClick={() => onPick(e.id)} className="w-full text-left px-2.5 py-1.5 rounded-lg bg-neutral-800 text-sm flex items-center justify-between gap-2">
+            <span>
+              {e.name}
+              <span className="text-neutral-500 text-xs"> {e.machine ? `· ${e.machine}` : ""}</span>
+            </span>
+            {pinnedIds.has(e.id) ? <Badge tone="alt">Alternate</Badge> : e.suggested && <Badge tone="purple">Suggested</Badge>}
+          </button>
+        ))}
+        {filtered.length === 0 && <p className="text-xs text-neutral-600 px-1">No matches.</p>}
+      </div>
+    </div>
+  );
+}
+
+function AddExercisePicker({ exercises, onPick, label, getStats }) {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const filtered = sortExercises(
+    exercises.filter((e) => !e.archived && e.name.toLowerCase().includes(query.toLowerCase())),
+    getStats
+  );
+  return (
+    <div className="relative">
+      <button onClick={() => setOpen((v) => !v)} className="text-xs text-amber-500 flex items-center gap-1 border border-neutral-800 rounded-lg px-2 py-1.5">
+        <Plus size={13} /> {label}
+      </button>
+      {open && (
+        <div className="absolute right-0 mt-1 w-64 bg-neutral-900 border border-neutral-700 rounded-xl p-2 z-10 shadow-lg">
+          <input
+            autoFocus
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search exercises"
+            className="w-full bg-neutral-800 rounded-lg px-2 py-1.5 text-sm border border-neutral-700 mb-2"
+          />
+          <div className="max-h-56 overflow-y-auto space-y-1">
+            {filtered.slice(0, 40).map((e) => (
+              <button
+                key={e.id}
+                onClick={() => {
+                  onPick(e.id);
+                  setOpen(false);
+                  setQuery("");
+                }}
+                className="w-full text-left px-2 py-1.5 rounded-lg hover:bg-neutral-800 text-sm flex items-center justify-between gap-2"
+              >
+                <span>{e.name}</span>
+                {e.suggested && <Badge tone="purple">Suggested</Badge>}
+              </button>
+            ))}
+            {filtered.length === 0 && <p className="text-xs text-neutral-600 px-1 py-1">No matches.</p>}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ProgramsView({ programs, setPrograms, exercises, exerciseById, openProgram }) {
+  const [creating, setCreating] = useState(false);
+  const [name, setName] = useState("");
+  const [selected, setSelected] = useState([]);
+  const [query, setQuery] = useState("");
+
+  const startCreate = () => {
+    setCreating(true);
+    setName("");
+    setSelected([]);
+    setQuery("");
+  };
+
+  const save = () => {
+    if (!name.trim() || selected.length === 0) return;
+    const p = { id: uid("p"), name: name.trim(), exerciseIds: selected, archived: false };
+    setPrograms([...programs, p]);
+    setCreating(false);
+  };
+
+  const grouped = MUSCLE_GROUPS.map((g) => ({ group: g, items: exercises.filter((e) => !e.archived && e.muscleGroup === g && e.name.toLowerCase().includes(query.toLowerCase())) })).filter(
+    (g) => g.items.length > 0
+  );
+
+  if (creating) {
+    return (
+      <div className="px-4 py-4 space-y-3">
+        <input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Workout name, e.g. Leg day 1"
+          className="w-full bg-neutral-900 rounded-lg px-3 py-2.5 text-sm border border-neutral-700"
+        />
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search exercises to add"
+          className="w-full bg-neutral-900 rounded-lg px-3 py-2.5 text-sm border border-neutral-700"
+        />
+        <div className="text-xs text-neutral-500">{selected.length} selected</div>
+        <div className="space-y-3 max-h-[55vh] overflow-y-auto">
+          {grouped.map((g) => (
+            <div key={g.group}>
+              <div className="text-[11px] text-neutral-500 mb-1">{g.group}</div>
+              <div className="space-y-1">
+                {g.items.map((e) => {
+                  const isSel = selected.includes(e.id);
+                  return (
+                    <button
+                      key={e.id}
+                      onClick={() => setSelected((s) => (isSel ? s.filter((x) => x !== e.id) : [...s, e.id]))}
+                      className={`w-full flex items-center justify-between px-3 py-2 rounded-lg border text-sm text-left ${
+                        isSel ? "border-amber-500 bg-amber-900/10" : "border-neutral-800 bg-neutral-900"
+                      }`}
+                    >
+                      {e.name}
+                      {isSel && <Check size={15} className="text-amber-500" />}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="flex gap-2 pt-1">
+          <button onClick={() => setCreating(false)} className="flex-1 py-2.5 rounded-xl border border-neutral-800 text-neutral-400 text-sm">
+            Cancel
+          </button>
+          <button
+            onClick={save}
+            disabled={!name.trim() || selected.length === 0}
+            className={`flex-1 py-2.5 rounded-xl text-sm font-medium ${!name.trim() || selected.length === 0 ? "bg-neutral-800 text-neutral-600" : "bg-amber-500 text-neutral-950"}`}
+          >
+            Create workout
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="px-4 py-4 space-y-2">
+      {programs.filter((p) => !p.archived).map((p) => (
+        <button key={p.id} onClick={() => openProgram(p.id)} className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-neutral-900 border border-neutral-800 text-left">
+          <div>
+            <div className="font-medium text-sm">{p.name}</div>
+            <div className="text-xs text-neutral-500">{p.exerciseIds.length} exercises</div>
+          </div>
+          <ChevronRight size={18} className="text-neutral-600" />
+        </button>
+      ))}
+      <button onClick={startCreate} className="w-full py-3 rounded-xl border border-dashed border-neutral-700 text-amber-500 text-sm flex items-center justify-center gap-1.5 mt-2">
+        <Plus size={15} /> New workout
+      </button>
+      <ArchivedProgramsSection programs={programs} setPrograms={setPrograms} />
+    </div>
+  );
+}
+
+function ArchivedProgramsSection({ programs, setPrograms }) {
+  const [show, setShow] = useState(false);
+  const archived = programs.filter((p) => p.archived);
+  if (archived.length === 0) return null;
+  const restore = (id) => setPrograms(programs.map((p) => (p.id === id ? { ...p, archived: false } : p)));
+  return (
+    <div className="pt-2">
+      <button onClick={() => setShow((v) => !v)} className="text-xs text-neutral-500">
+        {show ? "Hide" : "Show"} archived workouts ({archived.length})
+      </button>
+      {show && (
+        <div className="space-y-1.5 mt-2">
+          {archived.map((p) => (
+            <div key={p.id} className="flex items-center justify-between px-3 py-2 rounded-lg bg-neutral-900 border border-neutral-800">
+              <span className="text-sm text-neutral-400">{p.name}</span>
+              <button onClick={() => restore(p.id)} className="text-xs text-teal-400 border border-teal-900 rounded-lg px-2 py-1">
+                Restore
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ProgramDetailView({ program, programs, setPrograms, exercises, exerciseById, onBack }) {
+  const [addOpen, setAddOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  if (!program) return null;
+
+  const move = (idx, dir) => {
+    const ids = [...program.exerciseIds];
+    const j = idx + dir;
+    if (j < 0 || j >= ids.length) return;
+    [ids[idx], ids[j]] = [ids[j], ids[idx]];
+    setPrograms(programs.map((p) => (p.id === program.id ? { ...p, exerciseIds: ids } : p)));
+  };
+  const removeEx = (eid) => {
+    setPrograms(programs.map((p) => (p.id === program.id ? { ...p, exerciseIds: p.exerciseIds.filter((x) => x !== eid) } : p)));
+  };
+  const addEx = (eid) => {
+    if (program.exerciseIds.includes(eid)) return;
+    setPrograms(programs.map((p) => (p.id === program.id ? { ...p, exerciseIds: [...p.exerciseIds, eid] } : p)));
+  };
+  const archiveProgram = () => {
+    setPrograms(programs.map((p) => (p.id === program.id ? { ...p, archived: true } : p)));
+    onBack();
+  };
+
+  const filtered = exercises.filter((e) => !e.archived && !program.exerciseIds.includes(e.id) && e.name.toLowerCase().includes(query.toLowerCase()));
+
+  return (
+    <div className="px-4 py-4 space-y-3">
+      <button onClick={onBack} className="text-xs text-neutral-500">
+        Back to workouts
+      </button>
+      <div className="text-lg font-medium">{program.name}</div>
+      <div className="space-y-1.5">
+        {program.exerciseIds.map((eid, idx) => {
+          const ex = exerciseById[eid];
+          if (!ex) return null;
+          return (
+            <div key={eid} className="flex items-center gap-2 bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2">
+              <div className="flex-1">
+                <div className="text-sm">{ex.name}</div>
+                <div className="text-xs text-neutral-500">{ex.machine}</div>
+              </div>
+              <button onClick={() => move(idx, -1)} className="text-neutral-500 p-1">
+                <ChevronUp size={14} />
+              </button>
+              <button onClick={() => move(idx, 1)} className="text-neutral-500 p-1">
+                <ChevronDown size={14} />
+              </button>
+              <button onClick={() => removeEx(eid)} className="text-neutral-500 p-1">
+                <X size={14} />
+              </button>
+            </div>
+          );
+        })}
+      </div>
+
+      {addOpen ? (
+        <div className="space-y-2 pt-2 border-t border-neutral-800">
+          <input
+            autoFocus
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search exercises"
+            className="w-full bg-neutral-900 rounded-lg px-3 py-2 text-sm border border-neutral-700"
+          />
+          <div className="max-h-48 overflow-y-auto space-y-1">
+            {filtered.slice(0, 30).map((e) => (
+              <button key={e.id} onClick={() => addEx(e.id)} className="w-full text-left px-2.5 py-1.5 rounded-lg bg-neutral-900 border border-neutral-800 text-sm">
+                {e.name}
+              </button>
+            ))}
+          </div>
+          <button onClick={() => setAddOpen(false)} className="text-xs text-neutral-500">
+            Done adding
+          </button>
+        </div>
+      ) : (
+        <button onClick={() => setAddOpen(true)} className="w-full py-2.5 rounded-xl border border-dashed border-neutral-700 text-amber-500 text-sm flex items-center justify-center gap-1.5">
+          <Plus size={14} /> Add exercise
+        </button>
+      )}
+
+      <button onClick={archiveProgram} className="w-full py-2.5 rounded-xl border border-red-900 text-red-400 text-sm mt-4">
+        Archive this workout
+      </button>
+    </div>
+  );
+}
+
+function LibraryView({ exercises, setExercises, programs, setPrograms, logs, setLogs, getStats, openExercise }) {
+  const [query, setQuery] = useState("");
+  const [creating, setCreating] = useState(false);
+  const [form, setForm] = useState({ name: "", machine: "", muscleGroup: "Legs", defaultSets: "", defaultReps: "" });
+
+  const grouped = MUSCLE_GROUPS.map((g) => ({
+    group: g,
+    items: exercises.filter((e) => !e.archived && e.muscleGroup === g && e.name.toLowerCase().includes(query.toLowerCase())),
+  })).filter((g) => g.items.length > 0);
+
+  const saveNew = () => {
+    if (!form.name.trim()) return;
+    const e = { id: uid("e"), name: form.name.trim(), machine: form.machine.trim(), muscleGroup: form.muscleGroup, defaultSets: form.defaultSets, defaultReps: form.defaultReps, refNote: "", seedPR: null, archived: false };
+    setExercises([...exercises, e]);
+    setCreating(false);
+    setForm({ name: "", machine: "", muscleGroup: "Legs", defaultSets: "", defaultReps: "" });
+  };
+
+  return (
+    <div className="px-4 py-4 space-y-3">
+      <div className="relative">
+        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-600" />
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search exercises"
+          className="w-full bg-neutral-900 rounded-lg pl-8 pr-3 py-2.5 text-sm border border-neutral-700"
+        />
+      </div>
+
+      {creating && (
+        <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-3 space-y-2">
+          <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Exercise name" className="w-full bg-neutral-800 rounded-lg px-2.5 py-2 text-sm border border-neutral-700" />
+          <input value={form.machine} onChange={(e) => setForm({ ...form, machine: e.target.value })} placeholder="Machine / equipment" className="w-full bg-neutral-800 rounded-lg px-2.5 py-2 text-sm border border-neutral-700" />
+          <div className="flex gap-2">
+            {MUSCLE_GROUPS.map((g) => (
+              <button key={g} onClick={() => setForm({ ...form, muscleGroup: g })} className={`flex-1 py-1.5 rounded-lg text-xs border ${form.muscleGroup === g ? "border-amber-500 text-amber-500" : "border-neutral-700 text-neutral-500"}`}>
+                {g}
+              </button>
+            ))}
+          </div>
+          <div className="flex gap-2">
+            <input value={form.defaultSets} onChange={(e) => setForm({ ...form, defaultSets: e.target.value })} placeholder="Sets" className="flex-1 bg-neutral-800 rounded-lg px-2.5 py-2 text-sm border border-neutral-700" />
+            <input value={form.defaultReps} onChange={(e) => setForm({ ...form, defaultReps: e.target.value })} placeholder="Reps" className="flex-1 bg-neutral-800 rounded-lg px-2.5 py-2 text-sm border border-neutral-700" />
+          </div>
+          <div className="flex gap-2">
+            <button onClick={() => setCreating(false)} className="flex-1 py-2 rounded-lg border border-neutral-800 text-neutral-400 text-sm">
+              Cancel
+            </button>
+            <button onClick={saveNew} className="flex-1 py-2 rounded-lg bg-amber-500 text-neutral-950 text-sm font-medium">
+              Save exercise
+            </button>
+          </div>
+        </div>
+      )}
+
+      {!creating && (
+        <button onClick={() => setCreating(true)} className="w-full py-2.5 rounded-xl border border-dashed border-neutral-700 text-amber-500 text-sm flex items-center justify-center gap-1.5">
+          <Plus size={14} /> New exercise
+        </button>
+      )}
+
+      <div className="space-y-4">
+        {grouped.map((g) => (
+          <div key={g.group}>
+            <div className="text-[11px] text-neutral-500 mb-1.5">{g.group}</div>
+            <div className="space-y-1.5">
+              {g.items.map((e) => {
+                const stats = getStats(e.id);
+                return (
+                  <button key={e.id} onClick={() => openExercise(e.id)} className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg bg-neutral-900 border border-neutral-800 text-left">
+                    <div>
+                      <div className="text-sm">{e.name}</div>
+                      <div className="text-xs text-neutral-500">{e.machine}</div>
+                    </div>
+                    <div className="flex gap-1 items-center shrink-0">
+                      {e.nextTimeNote && <span title={e.nextTimeNote}>⚡</span>}
+                      {(e.supersetWith || []).length > 0 && <Badge tone="orange">Superset</Badge>}
+                      {e.suggested && <Badge tone="purple">Suggested</Badge>}
+                      {stats.prStraight !== null && <Badge tone="amber">{stats.prStraight}</Badge>}
+                      <ChevronRight size={16} className="text-neutral-600" />
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+      <ArchivedExercisesSection exercises={exercises} setExercises={setExercises} />
+      <DataSyncSection exercises={exercises} programs={programs} logs={logs} setExercises={setExercises} setPrograms={setPrograms} setLogs={setLogs} />
+    </div>
+  );
+}
+
+function ArchivedExercisesSection({ exercises, setExercises }) {
+  const [show, setShow] = useState(false);
+  const archived = exercises.filter((e) => e.archived);
+  if (archived.length === 0) return null;
+  const restore = (id) => setExercises(exercises.map((e) => (e.id === id ? { ...e, archived: false } : e)));
+  return (
+    <div className="pt-2">
+      <button onClick={() => setShow((v) => !v)} className="text-xs text-neutral-500">
+        {show ? "Hide" : "Show"} archived exercises ({archived.length})
+      </button>
+      {show && (
+        <div className="space-y-1.5 mt-2">
+          {archived.map((e) => (
+            <div key={e.id} className="flex items-center justify-between px-3 py-2 rounded-lg bg-neutral-900 border border-neutral-800">
+              <span className="text-sm text-neutral-400">{e.name}</span>
+              <button onClick={() => restore(e.id)} className="text-xs text-teal-400 border border-teal-900 rounded-lg px-2 py-1">
+                Restore
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ExerciseDetailView({ exercise, exercises, setExercises, history, getStats, logs, setLogs, programs, setPrograms, onBack }) {
+  const [editing, setEditing] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [form, setForm] = useState(exercise ? { ...exercise } : {});
+  const [quickLog, setQuickLog] = useState(false);
+  const [qWeight, setQWeight] = useState("");
+  const [qKind, setQKind] = useState("straight");
+  const [qSplit, setQSplit] = useState(false);
+  const [qLeft, setQLeft] = useState("");
+  const [qRight, setQRight] = useState("");
+  const [qNote, setQNote] = useState("");
+  const [qReps, setQReps] = useState("");
+
+  useEffect(() => {
+    setForm(exercise ? { ...exercise } : {});
+  }, [exercise]);
+
+  if (!exercise) return null;
+  const stats = getStats(exercise.id);
+
+  const saveEdit = () => {
+    setExercises(exercises.map((e) => (e.id === exercise.id ? { ...e, ...form } : e)));
+    setEditing(false);
+  };
+
+  const archive = () => {
+    setExercises(exercises.map((e) => (e.id === exercise.id ? { ...e, archived: true } : e)));
+    onBack();
+  };
+
+  const deleteForever = () => {
+    setExercises(
+      exercises
+        .filter((e) => e.id !== exercise.id)
+        .map((e) => (e.alternateIds && e.alternateIds.includes(exercise.id) ? { ...e, alternateIds: e.alternateIds.filter((x) => x !== exercise.id) } : e))
+    );
+    setPrograms(programs.map((p) => (p.exerciseIds.includes(exercise.id) ? { ...p, exerciseIds: p.exerciseIds.filter((x) => x !== exercise.id) } : p)));
+    onBack();
+  };
+
+  const saveQuickLog = () => {
+    const hasNote = qNote.trim() !== "";
+    if ((qSplit ? qLeft === "" && qRight === "" : !qWeight) && !hasNote) return;
+    const log = {
+      id: uid("log"),
+      date: todayStr(),
+      exerciseId: exercise.id,
+      plannedExerciseId: null,
+      programIds: [],
+      sets:
+        qSplit && (qLeft !== "" || qRight !== "")
+          ? [{ split: true, left: qLeft, right: qRight, kind: qKind }]
+          : qWeight
+          ? [{ weight: parseFloat(qWeight), kind: qKind, reps: qReps }]
+          : [],
+      note: hasNote ? qNote.trim() : "",
+      ts: Date.now(),
+    };
+    setLogs([...logs, log]);
+    setQuickLog(false);
+    setQWeight("");
+    setQLeft("");
+    setQRight("");
+    setQNote("");
+    setQReps("");
+  };
+
+  return (
+    <div className="px-4 py-4 space-y-3">
+      <button onClick={onBack} className="text-xs text-neutral-500">
+        Back to library
+      </button>
+
+      {editing ? (
+        <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-3 space-y-2">
+          <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full bg-neutral-800 rounded-lg px-2.5 py-2 text-sm border border-neutral-700" />
+          <input value={form.machine} onChange={(e) => setForm({ ...form, machine: e.target.value })} placeholder="Machine / equipment" className="w-full bg-neutral-800 rounded-lg px-2.5 py-2 text-sm border border-neutral-700" />
+          <div className="flex gap-2">
+            {MUSCLE_GROUPS.map((g) => (
+              <button key={g} onClick={() => setForm({ ...form, muscleGroup: g })} className={`flex-1 py-1.5 rounded-lg text-xs border ${form.muscleGroup === g ? "border-amber-500 text-amber-500" : "border-neutral-700 text-neutral-500"}`}>
+                {g}
+              </button>
+            ))}
+          </div>
+          <div className="flex gap-2">
+            <input value={form.defaultSets} onChange={(e) => setForm({ ...form, defaultSets: e.target.value })} placeholder="Sets" className="flex-1 bg-neutral-800 rounded-lg px-2.5 py-2 text-sm border border-neutral-700" />
+            <input value={form.defaultReps} onChange={(e) => setForm({ ...form, defaultReps: e.target.value })} placeholder="Reps" className="flex-1 bg-neutral-800 rounded-lg px-2.5 py-2 text-sm border border-neutral-700" />
+          </div>
+          <textarea
+            value={form.refNote || ""}
+            onChange={(e) => setForm({ ...form, refNote: e.target.value })}
+            placeholder="Reference note (baseline weight, warm-up protocol, etc.)"
+            rows={2}
+            className="w-full bg-neutral-800 rounded-lg px-2.5 py-2 text-sm border border-neutral-700 resize-none"
+          />
+          <div className="flex gap-2">
+            <button onClick={() => setEditing(false)} className="flex-1 py-2 rounded-lg border border-neutral-800 text-neutral-400 text-sm">
+              Cancel
+            </button>
+            <button onClick={saveEdit} className="flex-1 py-2 rounded-lg bg-amber-500 text-neutral-950 text-sm font-medium">
+              Save
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="flex items-start justify-between">
+          <div>
+            <div className="flex items-center gap-1.5">
+              <div className="text-lg font-medium">{exercise.name}</div>
+              {exercise.suggested && <Badge tone="purple">Suggested</Badge>}
+            </div>
+            <div className="text-xs text-neutral-500">
+              {exercise.machine} · {exercise.muscleGroup}
+              {exercise.defaultSets && exercise.defaultReps ? ` · ${exercise.defaultSets} x ${exercise.defaultReps}` : ""}
+            </div>
+            {exercise.suggested && exercise.suggestedNote && (
+              <div className="text-xs text-purple-400 mt-1 max-w-xs">{exercise.suggestedNote}</div>
+            )}
+          </div>
+          <button onClick={() => setEditing(true)} className="p-1.5 rounded-lg bg-neutral-800 text-neutral-400">
+            <Pencil size={14} />
+          </button>
+        </div>
+      )}
+
+      <div className="flex gap-2 flex-wrap">
+        {stats.prStraight !== null && (
+          <div className="bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2 flex items-center gap-2">
+            <Trophy size={14} className="text-amber-500" />
+            <div>
+              <div className="text-[11px] text-neutral-500">PR straight</div>
+              <div className="text-sm font-medium">{stats.prStraight}</div>
+            </div>
+          </div>
+        )}
+        {stats.prDS !== null && (
+          <div className="bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2 flex items-center gap-2">
+            <Trophy size={14} className="text-amber-500" />
+            <div>
+              <div className="text-[11px] text-neutral-500">PR dropset</div>
+              <div className="text-sm font-medium">{stats.prDS}</div>
+            </div>
+          </div>
+        )}
+        {stats.last && (
+          <div className="bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2 flex items-center gap-2">
+            <Clock size={14} className="text-teal-500" />
+            <div>
+              <div className="text-[11px] text-neutral-500">Last used, {formatDate(stats.last.date)}</div>
+              <div className="text-sm font-medium">{stats.last.sets.map((s) => formatRep(s)).join(", ")}</div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {exercise.refNote && (
+        <div className="text-xs text-neutral-500 bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2">Note: {exercise.refNote}</div>
+      )}
+
+      <NextTimeReminder exercise={exercise} exercises={exercises} setExercises={setExercises} />
+
+      <SupersetSection exercise={exercise} exercises={exercises} setExercises={setExercises} />
+
+      <AlternatesSection exercise={exercise} exercises={exercises} setExercises={setExercises} />
+
+      {quickLog ? (
+        <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-3 space-y-2">
+          <div className="text-xs text-neutral-500">Log a rep for today</div>
+          <div className="flex items-center gap-2">
+            {qSplit ? (
+              <div className="flex-1 flex gap-1">
+                <input type="number" inputMode="decimal" value={qLeft} onChange={(e) => setQLeft(e.target.value)} placeholder="L" className="w-16 bg-neutral-800 rounded-lg px-2.5 py-2 text-sm border border-neutral-700" />
+                <input type="number" inputMode="decimal" value={qRight} onChange={(e) => setQRight(e.target.value)} placeholder="R" className="w-16 bg-neutral-800 rounded-lg px-2.5 py-2 text-sm border border-neutral-700" />
+              </div>
+            ) : (
+              <input type="number" inputMode="decimal" value={qWeight} onChange={(e) => setQWeight(e.target.value)} placeholder="Weight" className="w-20 bg-neutral-800 rounded-lg px-2.5 py-2 text-sm border border-neutral-700" />
+            )}
+            {!qSplit && (
+              <input type="number" inputMode="numeric" value={qReps} onChange={(e) => setQReps(e.target.value)} placeholder="Reps" className="w-14 bg-neutral-800 rounded-lg px-1.5 py-2 text-sm border border-neutral-700 text-center" />
+            )}
+            <button
+              onClick={() => {
+                if (!qSplit) {
+                  setQLeft(qWeight || "");
+                  setQRight(qWeight || "");
+                } else {
+                  setQWeight(qLeft || qRight || "");
+                  setQLeft("");
+                  setQRight("");
+                }
+                setQSplit((v) => !v);
+              }}
+              className={`text-[10px] px-1.5 py-2 rounded-lg border shrink-0 ${qSplit ? "border-teal-500 text-teal-500" : "border-neutral-700 text-neutral-500"}`}
+            >
+              L/R
+            </button>
+            <div className="flex bg-neutral-800 rounded-lg border border-neutral-700 overflow-hidden text-xs shrink-0">
+              <button onClick={() => setQKind("straight")} className={`px-2.5 py-2 ${qKind === "straight" ? "bg-amber-500 text-neutral-950" : "text-neutral-400"}`}>
+                S
+              </button>
+              <button onClick={() => setQKind("DS")} className={`px-2.5 py-2 ${qKind === "DS" ? "bg-amber-500 text-neutral-950" : "text-neutral-400"}`}>
+                DS
+              </button>
+            </div>
+          </div>
+          <textarea
+            value={qNote}
+            onChange={(e) => setQNote(e.target.value)}
+            placeholder="Notes (optional)"
+            rows={1}
+            className="w-full bg-neutral-800 rounded-lg px-2.5 py-1.5 text-xs border border-neutral-700 text-neutral-300 placeholder-neutral-600 resize-none"
+          />
+          <div className="flex gap-2">
+            <button onClick={() => setQuickLog(false)} className="flex-1 py-2 rounded-lg border border-neutral-800 text-neutral-400 text-sm">
+              Cancel
+            </button>
+            <button onClick={saveQuickLog} className="flex-1 py-2 rounded-lg bg-amber-500 text-neutral-950 text-sm font-medium">
+              Save
+            </button>
+          </div>
+        </div>
+      ) : (
+        <button onClick={() => setQuickLog(true)} className="w-full py-2.5 rounded-xl border border-dashed border-neutral-700 text-amber-500 text-sm flex items-center justify-center gap-1.5">
+          <Plus size={14} /> Quick-log today
+        </button>
+      )}
+
+      <div>
+        <HistoryVisualizer history={history} onDelete={(id) => setLogs(logs.filter((l) => l.id !== id))} />
+      </div>
+
+      <button onClick={archive} className="w-full py-2.5 rounded-xl border border-red-900 text-red-400 text-sm mt-2">
+        Archive exercise
+      </button>
+      <p className="text-[11px] text-neutral-600 px-1">Archiving hides it from workouts and search but keeps its history. It can be restored later from the Library tab.</p>
+
+      {history.length === 0 ? (
+        confirmDelete ? (
+          <div className="bg-red-950/30 border border-red-900 rounded-xl p-3 space-y-2">
+            <p className="text-xs text-red-300">Delete "{exercise.name}" permanently? This removes it from your library and any workout it's part of. This can't be undone.</p>
+            <div className="flex gap-2">
+              <button onClick={() => setConfirmDelete(false)} className="flex-1 py-2 rounded-lg border border-neutral-700 text-neutral-400 text-sm">
+                Cancel
+              </button>
+              <button onClick={deleteForever} className="flex-1 py-2 rounded-lg bg-red-600 text-white text-sm font-medium flex items-center justify-center gap-1.5">
+                <Trash2 size={14} /> Delete permanently
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button onClick={() => setConfirmDelete(true)} className="w-full py-2 text-xs text-red-500/70 flex items-center justify-center gap-1.5">
+            <Trash2 size={12} /> Delete permanently instead
+          </button>
+        )
+      ) : (
+        <p className="text-[11px] text-neutral-600 px-1">
+          Permanent delete isn't available — this exercise has {history.length} logged session{history.length > 1 ? "s" : ""}. Archive it instead to keep that history intact.
+        </p>
+      )}
+    </div>
+  );
+}
+
+function HistoryView({ logs, setLogs, exerciseById, programById }) {
+  const [query, setQuery] = useState("");
+  const byDate = useMemo(() => {
+    const m = {};
+    logs.forEach((l) => {
+      if (!m[l.date]) m[l.date] = [];
+      m[l.date].push(l);
+    });
+    return Object.entries(m).sort((a, b) => (a[0] < b[0] ? 1 : -1));
+  }, [logs]);
+
+  const [openDates, setOpenDates] = useState({});
+  const toggle = (d) => setOpenDates((s) => ({ ...s, [d]: !s[d] }));
+
+  const filteredByDate = byDate
+    .map(([date, entries]) => ({
+      date,
+      entries: entries.filter((e) => !query || exerciseById[e.exerciseId]?.name.toLowerCase().includes(query.toLowerCase())),
+    }))
+    .filter((d) => d.entries.length > 0);
+
+  return (
+    <div className="px-4 py-4 space-y-2">
+      <div className="relative mb-2">
+        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-600" />
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Filter by exercise"
+          className="w-full bg-neutral-900 rounded-lg pl-8 pr-3 py-2.5 text-sm border border-neutral-700"
+        />
+      </div>
+      {filteredByDate.map(({ date, entries }) => {
+        const isOpen = openDates[date] ?? false;
+        const programNames = [...new Set(entries.flatMap((e) => e.programIds.map((pid) => programById[pid]?.name).filter(Boolean)))];
+        return (
+          <div key={date} className="bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden">
+            <button onClick={() => toggle(date)} className="w-full flex items-center justify-between px-3 py-2.5">
+              <div className="text-left">
+                <div className="text-sm font-medium">{formatDate(date)}</div>
+                <div className="text-xs text-neutral-500">{programNames.join(" + ") || "Freestyle"} · {entries.length} exercises</div>
+              </div>
+              {isOpen ? <ChevronUp size={16} className="text-neutral-600" /> : <ChevronDown size={16} className="text-neutral-600" />}
+            </button>
+            {isOpen && (
+              <div className="px-3 pb-3 space-y-1.5 border-t border-neutral-800 pt-2">
+                {entries.map((e) => (
+                  <div key={e.id} className="text-sm">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-neutral-300">{exerciseById[e.exerciseId]?.name || "Unknown"}</span>
+                      <span className="text-neutral-500 text-xs flex-1 text-right">{e.sets.map((s) => formatRep(s)).join(", ")}</span>
+                      <button
+                        onClick={() => setLogs(logs.filter((l) => l.id !== e.id))}
+                        aria-label="Delete this entry"
+                        className="text-neutral-600 hover:text-red-400 shrink-0"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
+                    {e.note && <div className="text-xs text-neutral-500 italic">{e.note}</div>}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      })}
+      {filteredByDate.length === 0 && <p className="text-sm text-neutral-500 text-center py-8">No sessions logged yet.</p>}
+    </div>
+  );
+}
+
+function AlternatesSection({ exercise, exercises, setExercises }) {
+  const [query, setQuery] = useState("");
+  const [newName, setNewName] = useState("");
+  const alternateIds = exercise.alternateIds || [];
+  const alternates = exercises.filter((e) => alternateIds.includes(e.id));
+  const candidates = exercises.filter(
+    (e) => !e.archived && e.id !== exercise.id && !alternateIds.includes(e.id) && query && e.name.toLowerCase().includes(query.toLowerCase())
+  );
+
+  const linkExisting = (id) => {
+    setExercises(
+      exercises.map((e) => {
+        if (e.id === exercise.id) return { ...e, alternateIds: [...(e.alternateIds || []), id] };
+        if (e.id === id) return { ...e, alternateIds: [...(e.alternateIds || []), exercise.id] };
+        return e;
+      })
+    );
+    setQuery("");
+  };
+
+  const unlink = (id) => {
+    setExercises(
+      exercises.map((e) => {
+        if (e.id === exercise.id) return { ...e, alternateIds: (e.alternateIds || []).filter((x) => x !== id) };
+        if (e.id === id) return { ...e, alternateIds: (e.alternateIds || []).filter((x) => x !== exercise.id) };
+        return e;
+      })
+    );
+  };
+
+  const createNew = () => {
+    if (!newName.trim()) return;
+    const newId = uid("e");
+    const newEx = {
+      id: newId,
+      name: newName.trim(),
+      machine: exercise.machine,
+      muscleGroup: exercise.muscleGroup,
+      defaultSets: exercise.defaultSets,
+      defaultReps: exercise.defaultReps,
+      refNote: "",
+      seedPR: null,
+      archived: false,
+      alternateIds: [exercise.id],
+    };
+    setExercises([
+      ...exercises.map((e) => (e.id === exercise.id ? { ...e, alternateIds: [...(e.alternateIds || []), newId] } : e)),
+      newEx,
+    ]);
+    setNewName("");
+  };
+
+  return (
+    <div className="space-y-1.5">
+      <div className="text-[11px] text-neutral-500">Alternates (shown first when swapping this exercise)</div>
+      {alternates.length > 0 && (
+        <div className="flex flex-wrap gap-1.5">
+          {alternates.map((a) => (
+            <span key={a.id} className="flex items-center gap-1 bg-sky-900/30 text-sky-400 text-xs px-2 py-1 rounded-lg">
+              {a.name}
+              <button onClick={() => unlink(a.id)} aria-label="Remove alternate link">
+                <X size={11} />
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
+      <div className="flex gap-1.5">
+        <input
+          value={newName}
+          onChange={(e) => setNewName(e.target.value)}
+          placeholder="Split off a new alternate..."
+          className="flex-1 bg-neutral-800 rounded-lg px-2.5 py-1.5 text-xs border border-neutral-700"
+        />
+        <button onClick={createNew} className="text-xs px-2.5 py-1.5 rounded-lg bg-sky-900/40 text-sky-400 shrink-0">
+          Add
+        </button>
+      </div>
+      <div className="relative">
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Or link an existing exercise..."
+          className="w-full bg-neutral-800 rounded-lg px-2.5 py-1.5 text-xs border border-neutral-700"
+        />
+        {query && (
+          <div className="mt-1 max-h-32 overflow-y-auto space-y-1 bg-neutral-900 border border-neutral-700 rounded-lg p-1">
+            {candidates.slice(0, 15).map((c) => (
+              <button key={c.id} onClick={() => linkExisting(c.id)} className="w-full text-left px-2 py-1 rounded text-xs hover:bg-neutral-800">
+                {c.name}
+              </button>
+            ))}
+            {candidates.length === 0 && <p className="text-[11px] text-neutral-600 px-1 py-0.5">No matches.</p>}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function WarmupBlock({ ex, entry, stats, updateEntry }) {
+  const [open, setOpen] = useState(true);
+  const defaultTarget = entry.warmupTarget !== undefined && entry.warmupTarget !== "" ? entry.warmupTarget : stats.prStraight ?? ex.warmupBase ?? "";
+  const target = parseFloat(entry.warmupTarget !== undefined && entry.warmupTarget !== "" ? entry.warmupTarget : defaultTarget);
+  const done = entry.warmupDone || [];
+
+  const setTarget = (val) => updateEntry(entry.key, (e) => ({ ...e, warmupTarget: val }));
+  const toggleDone = (i) => {
+    const next = [...done];
+    next[i] = !next[i];
+    updateEntry(entry.key, (e) => ({ ...e, warmupDone: next }));
+  };
+
+  return (
+    <div className="bg-sky-950/30 border border-sky-900/50 rounded-lg p-2.5 space-y-2">
+      <button onClick={() => setOpen((v) => !v)} className="w-full flex items-center justify-between text-xs text-sky-400 font-medium">
+        <span>Warm-up ramp</span>
+        {open ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+      </button>
+      {open && (
+        <>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-neutral-400">Today's target</span>
+            <input
+              type="number"
+              inputMode="decimal"
+              value={entry.warmupTarget !== undefined ? entry.warmupTarget : defaultTarget}
+              onChange={(e) => setTarget(e.target.value)}
+              className="w-20 bg-neutral-800 rounded-lg px-2 py-1 text-sm border border-neutral-700"
+            />
+          </div>
+          <div className="space-y-1">
+            {ex.warmupScheme.map((step, i) => {
+              const w = isNaN(target) ? null : Math.round((target * step.pct) / 100 / 5) * 5;
+              return (
+                <button
+                  key={i}
+                  onClick={() => toggleDone(i)}
+                  className={`w-full flex items-center justify-between text-xs px-2 py-1.5 rounded-lg ${
+                    done[i] ? "bg-sky-900/40 text-sky-300 line-through" : "bg-neutral-800/60 text-neutral-300"
+                  }`}
+                >
+                  <span className="flex items-center gap-1.5">
+                    <span className={`w-3.5 h-3.5 rounded border ${done[i] ? "bg-sky-500 border-sky-500" : "border-neutral-600"} flex items-center justify-center shrink-0`}>
+                      {done[i] && <Check size={10} className="text-neutral-950" />}
+                    </span>
+                    {step.reps} rep{step.reps > 1 ? "s" : ""} @ {step.pct}%{step.optional ? " (optional)" : ""}
+                  </span>
+                  <span className="font-medium">{w !== null ? w : "-"}</span>
+                </button>
+              );
+            })}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+const buildChartData = (history) => {
+  const byDate = {};
+  history.forEach((l) => {
+    if (!byDate[l.date]) byDate[l.date] = { date: l.date, straight: null, ds: null };
+    l.sets.forEach((s) => {
+      repValues(s).forEach((w) => {
+        const key = s.kind === "DS" ? "ds" : "straight";
+        if (byDate[l.date][key] === null || w > byDate[l.date][key]) byDate[l.date][key] = w;
+      });
+    });
+  });
+  return Object.values(byDate).sort((a, b) => (a.date < b.date ? -1 : 1));
+};
+
+function HistoryVisualizer({ history, onDelete }) {
+  const [view, setView] = useState("list");
+  const chartData = useMemo(() => buildChartData(history), [history]);
+  const hasStraight = chartData.some((d) => d.straight !== null);
+  const hasDS = chartData.some((d) => d.ds !== null);
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-1.5">
+        <div className="text-[11px] text-neutral-500">History</div>
+        <div className="flex bg-neutral-900 border border-neutral-800 rounded-lg overflow-hidden">
+          <button onClick={() => setView("list")} className={`p-1.5 ${view === "list" ? "bg-neutral-800 text-amber-500" : "text-neutral-500"}`} aria-label="List view">
+            <ListIcon size={14} />
+          </button>
+          <button onClick={() => setView("table")} className={`p-1.5 ${view === "table" ? "bg-neutral-800 text-amber-500" : "text-neutral-500"}`} aria-label="Table view">
+            <TableProperties size={14} />
+          </button>
+          <button onClick={() => setView("chart")} className={`p-1.5 ${view === "chart" ? "bg-neutral-800 text-amber-500" : "text-neutral-500"}`} aria-label="Chart view">
+            <LineChartIcon size={14} />
+          </button>
+        </div>
+      </div>
+
+      {history.length === 0 && <p className="text-xs text-neutral-600">No sessions logged yet.</p>}
+
+      {history.length > 0 && view === "list" && (
+        <div className="space-y-1.5">
+          {history.slice(0, 25).map((l) => (
+            <div key={l.id} className="bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-sm">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-neutral-400">{formatDate(l.date)}</span>
+                <span className="flex-1 text-right">{l.sets.map((s) => formatRep(s)).join(", ")}</span>
+                <button onClick={() => onDelete(l.id)} aria-label="Delete this entry" className="text-neutral-600 hover:text-red-400 shrink-0">
+                  <Trash2 size={13} />
+                </button>
+              </div>
+              {l.note && <div className="text-xs text-neutral-500 italic mt-1">{l.note}</div>}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {history.length > 0 && view === "table" && (
+        <div className="overflow-x-auto border border-neutral-800 rounded-lg">
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="bg-neutral-900 text-neutral-500 text-left">
+                <th className="px-2.5 py-2 font-medium">Date</th>
+                <th className="px-2.5 py-2 font-medium">Reps logged</th>
+                <th className="px-2.5 py-2 font-medium">Note</th>
+                <th className="px-2.5 py-2 font-medium"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {history.slice(0, 50).map((l) => (
+                <tr key={l.id} className="border-t border-neutral-800">
+                  <td className="px-2.5 py-2 text-neutral-400 whitespace-nowrap">{formatDate(l.date)}</td>
+                  <td className="px-2.5 py-2 text-neutral-200">{l.sets.map((s) => formatRep(s)).join(", ")}</td>
+                  <td className="px-2.5 py-2 text-neutral-500 italic">{l.note || ""}</td>
+                  <td className="px-2.5 py-2">
+                    <button onClick={() => onDelete(l.id)} aria-label="Delete this entry" className="text-neutral-600 hover:text-red-400">
+                      <Trash2 size={13} />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {history.length > 0 && view === "chart" && (
+        <div className="bg-neutral-900 border border-neutral-800 rounded-lg p-2" style={{ height: 220 }}>
+          {chartData.length < 2 ? (
+            <p className="text-xs text-neutral-600 p-2">Log at least two sessions to see a trend line.</p>
+          ) : (
+            <SimpleLineChart data={chartData} hasStraight={hasStraight} hasDS={hasDS} />
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function NextTimeReminder({ exercise, exercises, setExercises }) {
+  const [text, setText] = useState(exercise.nextTimeNote || "");
+
+  useEffect(() => {
+    setText(exercise.nextTimeNote || "");
+  }, [exercise.id, exercise.nextTimeNote]);
+
+  const save = () => {
+    setExercises(exercises.map((e) => (e.id === exercise.id ? { ...e, nextTimeNote: text.trim() } : e)));
+  };
+  const clear = () => {
+    setText("");
+    setExercises(exercises.map((e) => (e.id === exercise.id ? { ...e, nextTimeNote: "" } : e)));
+  };
+
+  return (
+    <div className="space-y-1.5">
+      <div className="text-[11px] text-neutral-500">Reminder for next session</div>
+      {exercise.nextTimeNote && (
+        <div className="bg-amber-900/30 border border-amber-700/50 text-amber-300 text-xs px-2.5 py-1.5 rounded-lg">⚡ {exercise.nextTimeNote}</div>
+      )}
+      <div className="flex gap-1.5">
+        <input
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder="e.g. Increase weight, try 2 more reps..."
+          className="flex-1 bg-neutral-800 rounded-lg px-2.5 py-1.5 text-xs border border-neutral-700"
+        />
+        <button onClick={save} className="text-xs px-2.5 py-1.5 rounded-lg bg-amber-900/40 text-amber-400 shrink-0">
+          Save
+        </button>
+        {exercise.nextTimeNote && (
+          <button onClick={clear} className="text-xs px-2.5 py-1.5 rounded-lg border border-neutral-700 text-neutral-500 shrink-0">
+            Clear
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function SupersetSection({ exercise, exercises, setExercises }) {
+  const [query, setQuery] = useState("");
+  const supersetIds = exercise.supersetWith || [];
+  const partners = exercises.filter((e) => supersetIds.includes(e.id));
+  const candidates = exercises.filter(
+    (e) => !e.archived && e.id !== exercise.id && !supersetIds.includes(e.id) && query && e.name.toLowerCase().includes(query.toLowerCase())
+  );
+
+  const link = (id) => {
+    setExercises(
+      exercises.map((e) => {
+        if (e.id === exercise.id) return { ...e, supersetWith: [...(e.supersetWith || []), id] };
+        if (e.id === id) return { ...e, supersetWith: [...(e.supersetWith || []), exercise.id] };
+        return e;
+      })
+    );
+    setQuery("");
+  };
+
+  const unlink = (id) => {
+    setExercises(
+      exercises.map((e) => {
+        if (e.id === exercise.id) return { ...e, supersetWith: (e.supersetWith || []).filter((x) => x !== id) };
+        if (e.id === id) return { ...e, supersetWith: (e.supersetWith || []).filter((x) => x !== exercise.id) };
+        return e;
+      })
+    );
+  };
+
+  return (
+    <div className="space-y-1.5">
+      <div className="text-[11px] text-neutral-500">Superset partner (paired together, not a swap)</div>
+      {partners.length > 0 && (
+        <div className="flex flex-wrap gap-1.5">
+          {partners.map((p) => (
+            <span key={p.id} className="flex items-center gap-1 bg-orange-900/30 text-orange-400 text-xs px-2 py-1 rounded-lg">
+              {p.name}
+              <button onClick={() => unlink(p.id)} aria-label="Remove superset link">
+                <X size={11} />
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
+      <div className="relative">
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Link a superset partner..."
+          className="w-full bg-neutral-800 rounded-lg px-2.5 py-1.5 text-xs border border-neutral-700"
+        />
+        {query && (
+          <div className="mt-1 max-h-32 overflow-y-auto space-y-1 bg-neutral-900 border border-neutral-700 rounded-lg p-1">
+            {candidates.slice(0, 15).map((c) => (
+              <button key={c.id} onClick={() => link(c.id)} className="w-full text-left px-2 py-1 rounded text-xs hover:bg-neutral-800">
+                {c.name}
+              </button>
+            ))}
+            {candidates.length === 0 && <p className="text-[11px] text-neutral-600 px-1 py-0.5">No matches.</p>}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function DataSyncSection({ exercises, programs, logs, setExercises, setPrograms, setLogs }) {
+  const fileInputRef = useRef(null);
+  const [status, setStatus] = useState("");
+
+  const doExport = async () => {
+    setStatus("");
+    const payload = {
+      exportedAt: new Date().toISOString(),
+      exercises,
+      programs,
+      logs,
+    };
+    const now = new Date();
+    const pad = (n) => String(n).padStart(2, "0");
+    const stamp = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}`;
+    const filename = `IronLedger_Backup_${stamp}.json`;
+    try {
+      const downloads = await (window.claude && window.claude.use ? window.claude.use("downloads") : Promise.resolve(null));
+      if (downloads) {
+        const res = await downloads.save({ filename, data: JSON.stringify(payload, null, 2) });
+        if (res) {
+          setStatus("Saved to your phone.");
+          return;
+        }
+      }
+      setStatus("Download isn't available here. Try opening this page in your browser instead of the chat preview.");
+    } catch (e) {
+      setStatus("Couldn't save the file. Try again, or open this page in your browser.");
+    }
+  };
+
+  const doImportClick = () => fileInputRef.current && fileInputRef.current.click();
+
+  const doImportFile = (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const data = JSON.parse(reader.result);
+        if (!data.exercises || !data.programs || !data.logs) {
+          setStatus("That file doesn't look like an Iron Ledger backup.");
+          return;
+        }
+        setExercises(data.exercises);
+        setPrograms(data.programs);
+        setLogs(data.logs);
+        setStatus(`Imported backup from ${data.exportedAt ? formatDate(data.exportedAt.slice(0, 10)) : "file"}.`);
+      } catch (err) {
+        setStatus("Couldn't read that file — make sure it's an Iron Ledger backup JSON.");
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  };
+
+  return (
+    <div className="pt-3 border-t border-neutral-800 space-y-2">
+      <div className="text-[11px] text-neutral-500">Your data lives on this device only. Back it up or bring it to a chat with Claude anytime.</div>
+      <div className="flex gap-2">
+        <button onClick={doExport} className="flex-1 py-2 rounded-lg bg-neutral-900 border border-neutral-800 text-sm text-neutral-300">
+          Export backup
+        </button>
+        <button onClick={doImportClick} className="flex-1 py-2 rounded-lg bg-neutral-900 border border-neutral-800 text-sm text-neutral-300">
+          Import backup
+        </button>
+        <input ref={fileInputRef} type="file" accept="application/json" onChange={doImportFile} className="hidden" />
+      </div>
+      {status && <p className="text-xs text-teal-400">{status}</p>}
+    </div>
+  );
+}
+
+function SimpleLineChart({ data, hasStraight, hasDS }) {
+  const W = 320;
+  const H = 180;
+  const padL = 32;
+  const padR = 8;
+  const padT = 8;
+  const padB = 20;
+  const allVals = [];
+  data.forEach((d) => {
+    if (d.straight !== null) allVals.push(d.straight);
+    if (d.ds !== null) allVals.push(d.ds);
+  });
+  const minV = Math.min(...allVals);
+  const maxV = Math.max(...allVals);
+  const range = maxV - minV || 1;
+  const x = (i) => padL + (i / (data.length - 1)) * (W - padL - padR);
+  const y = (v) => padT + (1 - (v - minV) / range) * (H - padT - padB);
+
+  const pathFor = (key) => {
+    const pts = data.map((d, i) => (d[key] !== null ? [x(i), y(d[key])] : null)).filter(Boolean);
+    if (pts.length < 2) return null;
+    return pts.map((p, i) => `${i === 0 ? "M" : "L"}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(" ");
+  };
+
+  const straightPath = hasStraight ? pathFor("straight") : null;
+  const dsPath = hasDS ? pathFor("ds") : null;
+  const step = Math.max(1, Math.ceil(data.length / 5));
+
+  return (
+    <div>
+      <svg viewBox={`0 0 ${W} ${H}`} width="100%" height={H - 24}>
+        <line x1={padL} y1={H - padB} x2={W - padR} y2={H - padB} stroke="#3f3f46" strokeWidth="1" />
+        <line x1={padL} y1={padT} x2={padL} y2={H - padB} stroke="#3f3f46" strokeWidth="1" />
+        <text x={2} y={y(maxV) + 3} fontSize="9" fill="#a3a3a3">
+          {Math.round(maxV)}
+        </text>
+        <text x={2} y={y(minV) + 3} fontSize="9" fill="#a3a3a3">
+          {Math.round(minV)}
+        </text>
+        {data.map((d, i) =>
+          i % step === 0 ? (
+            <text key={i} x={x(i)} y={H - 6} fontSize="8" fill="#a3a3a3" textAnchor="middle">
+              {formatDate(d.date).split(" ").slice(0, 2).join(" ")}
+            </text>
+          ) : null
+        )}
+        {straightPath && <path d={straightPath} fill="none" stroke="#f59e0b" strokeWidth="2" />}
+        {dsPath && <path d={dsPath} fill="none" stroke="#38bdf8" strokeWidth="2" />}
+        {hasStraight &&
+          data.map((d, i) => (d.straight !== null ? <circle key={"s" + i} cx={x(i)} cy={y(d.straight)} r="2.5" fill="#f59e0b" /> : null))}
+        {hasDS && data.map((d, i) => (d.ds !== null ? <circle key={"d" + i} cx={x(i)} cy={y(d.ds)} r="2.5" fill="#38bdf8" /> : null))}
+      </svg>
+      <div className="flex gap-3 justify-center text-[10px] text-neutral-400 mt-1">
+        {hasStraight && (
+          <span className="flex items-center gap-1">
+            <span className="w-2 h-2 rounded-full inline-block" style={{ background: "#f59e0b" }} /> Straight
+          </span>
+        )}
+        {hasDS && (
+          <span className="flex items-center gap-1">
+            <span className="w-2 h-2 rounded-full inline-block" style={{ background: "#38bdf8" }} /> Dropset
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<App />);
+</script>
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("sw.js").catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>
