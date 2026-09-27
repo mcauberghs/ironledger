@@ -1,0 +1,2907 @@
+{
+  "exportedAt": "2026-09-27T14:08:42.567Z",
+  "exercises": [
+    {
+      "id": "e1",
+      "name": "Reverse Hypers",
+      "machine": "Bodyweight",
+      "muscleGroup": "Legs",
+      "defaultSets": "1-2",
+      "defaultReps": "10-15",
+      "refNote": "Warm-up, bodyweight",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e12",
+        "emu8k4a5z8gwzw",
+        "e34",
+        "e38"
+      ]
+    },
+    {
+      "id": "e2",
+      "name": "Deadlift",
+      "machine": "Free Weights",
+      "muscleGroup": "Legs",
+      "defaultSets": "3",
+      "defaultReps": "5 80%",
+      "refNote": "Warm-up: 8x40%, 5x60%, 2x80%, opt 1x90%. Work: 3x5x80%. Baseline for warm-ups: 468 (4/1/26). PR435 (4/1/26)",
+      "seedPR": 435,
+      "archived": false,
+      "alternateIds": [
+        "e38",
+        "e32",
+        "e34",
+        "e12",
+        "emu8k4a5z8gwzw"
+      ],
+      "warmupScheme": [
+        {
+          "pct": 40,
+          "reps": 8
+        },
+        {
+          "pct": 60,
+          "reps": 5
+        },
+        {
+          "pct": 80,
+          "reps": 2
+        },
+        {
+          "pct": 90,
+          "reps": 1,
+          "optional": true
+        }
+      ],
+      "warmupBase": 468
+    },
+    {
+      "id": "e3",
+      "name": "Barbell Front Squats",
+      "machine": "Free Weights",
+      "muscleGroup": "Legs",
+      "defaultSets": "2-3",
+      "defaultReps": "6-8, leaving 2-3 in the tank",
+      "refNote": "185 (current working weight)",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e11",
+        "e8",
+        "e9",
+        "e36",
+        "e14",
+        "e20"
+      ]
+    },
+    {
+      "id": "e4",
+      "name": "Reverse Lunges",
+      "machine": "Smith",
+      "muscleGroup": "Legs",
+      "defaultSets": "3",
+      "defaultReps": "8-10",
+      "refNote": "45 lbs plate per side + Smith machine bar weight",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e29",
+        "e95",
+        "e20",
+        "e40",
+        "e41"
+      ]
+    },
+    {
+      "id": "e5",
+      "name": "Seated Leg Curl - One Leg",
+      "machine": "Hammer strength",
+      "muscleGroup": "Legs",
+      "defaultSets": "3",
+      "defaultReps": "10",
+      "refNote": "125 lbs per leg",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "alt5",
+        "e15",
+        "e31"
+      ]
+    },
+    {
+      "id": "e6",
+      "name": "Standing Calf Raise Machine",
+      "machine": "Machine",
+      "muscleGroup": "Legs",
+      "defaultSets": "2-3",
+      "defaultReps": "10-12",
+      "refNote": "90 kg (198 lbs)",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "alt10",
+        "e13",
+        "e33"
+      ]
+    },
+    {
+      "id": "e7",
+      "name": "Banded Overhead Squats",
+      "machine": "Bands",
+      "muscleGroup": "Legs",
+      "defaultSets": "1-2",
+      "defaultReps": "10-15",
+      "refNote": "Warm-up, banded",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e11",
+        "e21"
+      ]
+    },
+    {
+      "id": "e8",
+      "name": "Barbell Squats",
+      "machine": "Cage",
+      "muscleGroup": "Legs",
+      "defaultSets": "3",
+      "defaultReps": "7",
+      "refNote": "Baseline 435 (70%=135x2). Baseline for warm-ups: 188/side + 45 bar = 421 (3/21/26). Warm-up: 8x40%, 5x60%, 2x80%, opt 1x90%. Work: 3x7x70%. PR355 (4/25/26)",
+      "seedPR": 355,
+      "archived": false,
+      "alternateIds": [
+        "e9",
+        "e36",
+        "e3",
+        "e14",
+        "e11"
+      ],
+      "warmupScheme": [
+        {
+          "pct": 40,
+          "reps": 8
+        },
+        {
+          "pct": 60,
+          "reps": 5
+        },
+        {
+          "pct": 80,
+          "reps": 2
+        },
+        {
+          "pct": 90,
+          "reps": 1,
+          "optional": true
+        }
+      ],
+      "warmupBase": 421
+    },
+    {
+      "id": "e9",
+      "name": "Squat (Smith Machine)",
+      "machine": "Smith",
+      "muscleGroup": "Legs",
+      "defaultSets": "3",
+      "defaultReps": "7",
+      "refNote": "Baseline (100%): 185/side. Working weight ~70% = ~130/side",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e8",
+        "e36",
+        "e3",
+        "e14"
+      ]
+    },
+    {
+      "id": "e10",
+      "name": "Hip Thrust machine",
+      "machine": "Machine",
+      "muscleGroup": "Legs",
+      "defaultSets": "3",
+      "defaultReps": "10",
+      "refNote": "185 lbs per side",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e94",
+        "e32",
+        "e12",
+        "emu8k4a5z8gwzw",
+        "e20"
+      ]
+    },
+    {
+      "id": "e11",
+      "name": "Spanish Squats",
+      "machine": "Bands + DB",
+      "muscleGroup": "Legs",
+      "defaultSets": "3",
+      "defaultReps": "10",
+      "refNote": "Band behind knees + two 65 lb dumbbells",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e30",
+        "e14",
+        "e36",
+        "e20",
+        "e41",
+        "e3",
+        "e8",
+        "e7"
+      ]
+    },
+    {
+      "id": "e12",
+      "name": "Back Extension",
+      "machine": "Hammer strength",
+      "muscleGroup": "Legs",
+      "defaultSets": "3",
+      "defaultReps": "12",
+      "refNote": "+45 lbs",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e2",
+        "e1",
+        "e10",
+        "e32"
+      ]
+    },
+    {
+      "id": "e13",
+      "name": "Seated Calf Raise",
+      "machine": "Hammer strength",
+      "muscleGroup": "Legs",
+      "defaultSets": "3",
+      "defaultReps": "10",
+      "refNote": "135",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e6",
+        "e33",
+        "alt10"
+      ]
+    },
+    {
+      "id": "e14",
+      "name": "Seated Leg Press",
+      "machine": "Hammer strength",
+      "muscleGroup": "Legs",
+      "defaultSets": "3",
+      "defaultReps": "12",
+      "refNote": "140/590 High 590 Low",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "alt4",
+        "e36",
+        "e11",
+        "e3",
+        "e8",
+        "e9"
+      ]
+    },
+    {
+      "id": "e15",
+      "name": "Kneeling Leg Curls",
+      "machine": "Machine",
+      "muscleGroup": "Legs",
+      "defaultSets": "3",
+      "defaultReps": "10",
+      "refNote": "150",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e5"
+      ]
+    },
+    {
+      "id": "e16",
+      "name": "Suitcase carry",
+      "machine": "DB or Kettlebell",
+      "muscleGroup": "Core",
+      "defaultSets": "",
+      "defaultReps": "Distance/time based",
+      "refNote": "79 lbs, one side only",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e26",
+        "e17"
+      ]
+    },
+    {
+      "id": "e17",
+      "name": "Turkish Get up",
+      "machine": "DB",
+      "muscleGroup": "Core",
+      "defaultSets": "1",
+      "defaultReps": "To failure",
+      "refNote": "35 lbs",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e16",
+        "e27"
+      ]
+    },
+    {
+      "id": "e18",
+      "name": "Hip Abduction OUT",
+      "machine": "Hammer strength",
+      "muscleGroup": "Legs",
+      "defaultSets": "3",
+      "defaultReps": "10",
+      "refNote": "260",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": []
+    },
+    {
+      "id": "e19",
+      "name": "Hip Adduction IN",
+      "machine": "Hammer strength",
+      "muscleGroup": "Legs",
+      "defaultSets": "3",
+      "defaultReps": "12",
+      "refNote": "280",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": []
+    },
+    {
+      "id": "e20",
+      "name": "Bulgarian Split Squats (leave 1-2 in tank)",
+      "machine": "Kettlebell",
+      "muscleGroup": "Legs",
+      "defaultSets": "4",
+      "defaultReps": "4-6",
+      "refNote": "Two different kettlebells, one in each hand: 36 lbs + 44 lbs",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e11",
+        "e3",
+        "e4",
+        "e10"
+      ]
+    },
+    {
+      "id": "e21",
+      "name": "Cossack Squats",
+      "machine": "Free Weights",
+      "muscleGroup": "Legs",
+      "defaultSets": "3",
+      "defaultReps": "20",
+      "refNote": "35",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e7"
+      ]
+    },
+    {
+      "id": "e23",
+      "name": "Cable Heavy Twist Standing",
+      "machine": "Cable",
+      "muscleGroup": "Core",
+      "defaultSets": "3",
+      "defaultReps": "10",
+      "refNote": "35 lbs",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e24",
+        "e28"
+      ]
+    },
+    {
+      "id": "e24",
+      "name": "Cable Twist Kneeling",
+      "machine": "Cable",
+      "muscleGroup": "Core",
+      "defaultSets": "3",
+      "defaultReps": "10",
+      "refNote": "50",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e23"
+      ]
+    },
+    {
+      "id": "e25",
+      "name": "Captain Chair",
+      "machine": "Captain Chair",
+      "muscleGroup": "Core",
+      "defaultSets": "3",
+      "defaultReps": "12",
+      "refNote": "",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "emu5o2pdv2nda9"
+      ]
+    },
+    {
+      "id": "e26",
+      "name": "Farmers Walk",
+      "machine": "Kettlebell",
+      "muscleGroup": "Core",
+      "defaultSets": "",
+      "defaultReps": "Distance based (undetermined)",
+      "refNote": "2x55",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e16"
+      ]
+    },
+    {
+      "id": "e27",
+      "name": "Kettlebell swing",
+      "machine": "Kettlebell",
+      "muscleGroup": "Core",
+      "defaultSets": "10 minutes (EMOM)",
+      "defaultReps": "15 reps at the top of each minute, rest the remainder",
+      "refNote": "39 lb kettlebell. Used as cardio/warm-up",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e17"
+      ]
+    },
+    {
+      "id": "e28",
+      "name": "Pallof Press",
+      "machine": "Cable",
+      "muscleGroup": "Core",
+      "defaultSets": "",
+      "defaultReps": "",
+      "refNote": "",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e23"
+      ]
+    },
+    {
+      "id": "e29",
+      "name": "Dumbbell Alt Reverse Lunges",
+      "machine": "DB",
+      "muscleGroup": "Legs",
+      "defaultSets": "2-3",
+      "defaultReps": "10-12",
+      "refNote": "35 lbs x2",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e4"
+      ]
+    },
+    {
+      "id": "e30",
+      "name": "Leg Extension",
+      "machine": "Hammer strength",
+      "muscleGroup": "Legs",
+      "defaultSets": "3",
+      "defaultReps": "12",
+      "refNote": "One leg at a time: 160 lbs per leg. Both legs: machine max",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e11"
+      ]
+    },
+    {
+      "id": "e31",
+      "name": "Nordic Curls",
+      "machine": "Bodyweight",
+      "muscleGroup": "Legs",
+      "defaultSets": "3",
+      "defaultReps": "10",
+      "refNote": "",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e5"
+      ]
+    },
+    {
+      "id": "e32",
+      "name": "RDL (Romanian DeadLift)",
+      "machine": "Barbell",
+      "muscleGroup": "Legs",
+      "defaultSets": "4",
+      "defaultReps": "10",
+      "refNote": "275",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e2",
+        "e10",
+        "e12"
+      ]
+    },
+    {
+      "id": "e33",
+      "name": "Seated Dumbbell Calf Raise",
+      "machine": "DB",
+      "muscleGroup": "Legs",
+      "defaultSets": "3",
+      "defaultReps": "15-20",
+      "refNote": "45 lbs per side",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e6",
+        "e13"
+      ]
+    },
+    {
+      "id": "e34",
+      "name": "Single Leg RDL",
+      "machine": "Free Weights",
+      "muscleGroup": "Legs",
+      "defaultSets": "3",
+      "defaultReps": "10",
+      "refNote": "20",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e2",
+        "e1"
+      ]
+    },
+    {
+      "id": "e35",
+      "name": "Standing Dumbell Calf",
+      "machine": "Smith",
+      "muscleGroup": "Legs",
+      "defaultSets": "3",
+      "defaultReps": "15-20",
+      "refNote": "180x2",
+      "seedPR": null,
+      "archived": true,
+      "alternateIds": []
+    },
+    {
+      "id": "e36",
+      "name": "Hack Squat",
+      "machine": "Machine",
+      "muscleGroup": "Legs",
+      "defaultSets": "3",
+      "defaultReps": "10",
+      "refNote": "135x2",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e14",
+        "e8",
+        "e9",
+        "e11",
+        "e3"
+      ]
+    },
+    {
+      "id": "e38",
+      "name": "Suitcase deadlift",
+      "machine": "Kettlebell",
+      "muscleGroup": "Legs",
+      "defaultSets": "3",
+      "defaultReps": "10",
+      "refNote": "50 lbs in each hand",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e2",
+        "e1"
+      ]
+    },
+    {
+      "id": "e39",
+      "name": "Superset One leg HipThrust + Reverse Lunges",
+      "machine": "Free Weights",
+      "muscleGroup": "Legs",
+      "defaultSets": "3",
+      "defaultReps": "10",
+      "refNote": "Hip 45x2 + Lung 25x2",
+      "seedPR": null,
+      "archived": true,
+      "alternateIds": []
+    },
+    {
+      "id": "e40",
+      "name": "Forward Lunges",
+      "machine": "DB",
+      "muscleGroup": "Legs",
+      "defaultSets": "3",
+      "defaultReps": "Mat length",
+      "refNote": "Two 40 lb dumbbells",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e4"
+      ]
+    },
+    {
+      "id": "e41",
+      "name": "STEP UP - 24\" Box",
+      "machine": "24\" Box",
+      "muscleGroup": "Legs",
+      "defaultSets": "3",
+      "defaultReps": "10",
+      "refNote": "40 lbs per hand, dropset",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e11",
+        "e4"
+      ]
+    },
+    {
+      "id": "e42",
+      "name": "AX Barbell Squats 4 warm-up sets - Baseline is MAX - 8 x 40% - 5 x 60% - 2 x 80% - Opt 1 x 90% - Then 3 x 7 x 70%  3/21/26 100% = 188*2+barbell",
+      "machine": "",
+      "muscleGroup": "Legs",
+      "defaultSets": "",
+      "defaultReps": "",
+      "refNote": "",
+      "seedPR": null,
+      "archived": true,
+      "alternateIds": []
+    },
+    {
+      "id": "e43",
+      "name": "Row -Two hands - Seated",
+      "machine": "Cable",
+      "muscleGroup": "Back",
+      "defaultSets": "3",
+      "defaultReps": "10",
+      "refNote": "143",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "alt1",
+        "e85",
+        "e54",
+        "e55"
+      ]
+    },
+    {
+      "id": "e44",
+      "name": "Lat Pull Down - Narrow grip",
+      "machine": "Hammer strength",
+      "muscleGroup": "Back",
+      "defaultSets": "3",
+      "defaultReps": "12",
+      "refNote": "231 lbs, dropset",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e52",
+        "e78",
+        "e70",
+        "alt3"
+      ]
+    },
+    {
+      "id": "e45",
+      "name": "Straight Arms Pushdown",
+      "machine": "Cable",
+      "muscleGroup": "Back",
+      "defaultSets": "3",
+      "defaultReps": "10",
+      "refNote": "77 lbs, dropset",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e46",
+        "e78"
+      ]
+    },
+    {
+      "id": "e46",
+      "name": "DB Pullover 1.5 Ladder",
+      "machine": "Free Weights",
+      "muscleGroup": "Back",
+      "defaultSets": "3",
+      "defaultReps": "10",
+      "refNote": "80 lb dumbbell, 1.5-rep style",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e45",
+        "e57"
+      ]
+    },
+    {
+      "id": "e47",
+      "name": "Triceps Pushdown",
+      "machine": "Cable",
+      "muscleGroup": "Triceps",
+      "defaultSets": "3",
+      "defaultReps": "12",
+      "refNote": "88 lbs, dropset",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e59",
+        "e88",
+        "e49",
+        "e58"
+      ]
+    },
+    {
+      "id": "e48",
+      "name": "Lying DB Extension (triceps)",
+      "machine": "DB or Bar",
+      "muscleGroup": "Triceps",
+      "defaultSets": "3",
+      "defaultReps": "10",
+      "refNote": "Either one heavy dumbbell/bar with both hands (65 lbs), or two dumbbells one per arm (35 lbs each). Keep elbows close.",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e58",
+        "e57",
+        "e56"
+      ]
+    },
+    {
+      "id": "e49",
+      "name": "Cable Triceps Kickbacks",
+      "machine": "Cable",
+      "muscleGroup": "Triceps",
+      "defaultSets": "3",
+      "defaultReps": "12",
+      "refNote": "22 x 2",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "alt6",
+        "e47",
+        "e59"
+      ]
+    },
+    {
+      "id": "e50",
+      "name": "Face Pull",
+      "machine": "Cable",
+      "muscleGroup": "Back",
+      "defaultSets": "3",
+      "defaultReps": "15",
+      "refNote": "67 lbs",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e53",
+        "e84",
+        "e98"
+      ]
+    },
+    {
+      "id": "e51",
+      "name": "Barbell Row",
+      "machine": "Free Weights",
+      "muscleGroup": "Back",
+      "defaultSets": "3",
+      "defaultReps": "6-8",
+      "refNote": "Baseline 185",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "alt1",
+        "alt2",
+        "e93",
+        "e85",
+        "e83"
+      ]
+    },
+    {
+      "id": "e52",
+      "name": "Lat Pull Down Wide Grip",
+      "machine": "Hammer strength",
+      "muscleGroup": "Back",
+      "defaultSets": "3",
+      "defaultReps": "12",
+      "refNote": "231 lbs, dropset",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e44",
+        "e78",
+        "e70",
+        "alt3"
+      ]
+    },
+    {
+      "id": "e53",
+      "name": "1.5 DB High Pull (Rear Delt)",
+      "machine": "Free Weights",
+      "muscleGroup": "Back",
+      "defaultSets": "3",
+      "defaultReps": "12",
+      "refNote": "30 DS",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e50",
+        "e84",
+        "e98",
+        "e87"
+      ]
+    },
+    {
+      "id": "e54",
+      "name": "1.5 High Cable Row Ladder (One Arm)",
+      "machine": "Cable",
+      "muscleGroup": "Back",
+      "defaultSets": "1",
+      "defaultReps": "To failure, per arm",
+      "refNote": "60 lbs. Ladder rest: 1s, then 2s, then 3s, etc. between reps",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e85",
+        "e43",
+        "alt1",
+        "e55"
+      ]
+    },
+    {
+      "id": "e55",
+      "name": "Inverted Row",
+      "machine": "Bodyweight",
+      "muscleGroup": "Back",
+      "defaultSets": "1",
+      "defaultReps": "To failure",
+      "refNote": "",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e70",
+        "e43",
+        "e54"
+      ]
+    },
+    {
+      "id": "e56",
+      "name": "Closegrip Bench Press",
+      "machine": "Smith",
+      "muscleGroup": "Triceps",
+      "defaultSets": "3",
+      "defaultReps": "10",
+      "refNote": "65 lbs per side, dropset",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e48",
+        "e69",
+        "e60",
+        "emubvaklw3nw18"
+      ]
+    },
+    {
+      "id": "e57",
+      "name": "PJR DB Pullover",
+      "machine": "DB",
+      "muscleGroup": "Triceps",
+      "defaultSets": "3",
+      "defaultReps": "10",
+      "refNote": "Either one heavy dumbbell/bar with both hands (75 lbs), or two dumbbells one per arm (35 lbs each)",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e48",
+        "e58",
+        "e46"
+      ]
+    },
+    {
+      "id": "e58",
+      "name": "Overhead triceps extension (Pushaway)",
+      "machine": "Cable",
+      "muscleGroup": "Triceps",
+      "defaultSets": "3",
+      "defaultReps": "15",
+      "refNote": "67.5",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e47",
+        "e88",
+        "e48",
+        "e57"
+      ]
+    },
+    {
+      "id": "e59",
+      "name": "\"X\" Pushdown",
+      "machine": "Cable",
+      "muscleGroup": "Triceps",
+      "defaultSets": "3",
+      "defaultReps": "12",
+      "refNote": "30 lbs per side, dropset",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e47",
+        "e88",
+        "e49"
+      ]
+    },
+    {
+      "id": "e60",
+      "name": "Bench Dips",
+      "machine": "Bodyweight",
+      "muscleGroup": "Triceps",
+      "defaultSets": "1",
+      "defaultReps": "To failure",
+      "refNote": "Bodyweight + additional weight (currently 0)",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e56",
+        "e69",
+        "e77",
+        "emubvaklw3nw18"
+      ]
+    },
+    {
+      "id": "e61",
+      "name": "Biceps EZ Bar Curl",
+      "machine": "EZ Bar",
+      "muscleGroup": "Biceps",
+      "defaultSets": "3",
+      "defaultReps": "10",
+      "refNote": "90 lbs, dropset",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e91",
+        "e73",
+        "e64"
+      ]
+    },
+    {
+      "id": "e62",
+      "name": "DB Crossbody Hammer Curls",
+      "machine": "DB",
+      "muscleGroup": "Biceps",
+      "defaultSets": "3",
+      "defaultReps": "10-12",
+      "refNote": "45x2",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e72",
+        "e71",
+        "e73"
+      ]
+    },
+    {
+      "id": "e63",
+      "name": "Cable Stretch Drag Curls",
+      "machine": "Cable",
+      "muscleGroup": "Biceps",
+      "defaultSets": "3",
+      "defaultReps": "10-12",
+      "refNote": "37.5 lbs per side",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e89",
+        "e64"
+      ]
+    },
+    {
+      "id": "e64",
+      "name": "Mentzer Biceps Pulldown Trap Set (123454321)",
+      "machine": "Cable",
+      "muscleGroup": "Biceps",
+      "defaultSets": "3",
+      "defaultReps": "9 reps, tempo pyramid: 1s,2s,3s,4s,5s,4s,3s,2s,1s per rep",
+      "refNote": "187 lbs, dropset",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e61",
+        "e63",
+        "e89"
+      ]
+    },
+    {
+      "id": "e65",
+      "name": "Incline Bench Press",
+      "machine": "DB",
+      "muscleGroup": "Chest",
+      "defaultSets": "4",
+      "defaultReps": "5, 10, 10, 20 (hit 20 on last set = increase weight next time)",
+      "refNote": "75 lb dumbbells x2, 45° incline",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "alt11",
+        "e92",
+        "alt8"
+      ]
+    },
+    {
+      "id": "e66",
+      "name": "Crossover Chest #11",
+      "machine": "Cable",
+      "muscleGroup": "Chest",
+      "defaultSets": "3",
+      "defaultReps": "10, then partial reps once full range isn't possible",
+      "refNote": "60 lbs per side",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e75",
+        "e76",
+        "e67"
+      ]
+    },
+    {
+      "id": "e67",
+      "name": "DB Floor Fly",
+      "machine": "DB",
+      "muscleGroup": "Chest",
+      "defaultSets": "3",
+      "defaultReps": "10",
+      "refNote": "45x2",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e76",
+        "e66",
+        "e75"
+      ]
+    },
+    {
+      "id": "e68",
+      "name": "Deficit Push Ups Ladder",
+      "machine": "Free Weights",
+      "muscleGroup": "Chest",
+      "defaultSets": "1",
+      "defaultReps": "8 minimum, then to failure",
+      "refNote": "",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e77",
+        "e69",
+        "alt7",
+        "e74",
+        "e90"
+      ]
+    },
+    {
+      "id": "e69",
+      "name": "Dips Failure",
+      "machine": "Bodyweight",
+      "muscleGroup": "Chest",
+      "defaultSets": "4",
+      "defaultReps": "To failure each set: 20, 14, 10, 7",
+      "refNote": "Weighted. PR was 20/14/10/7. Used either as a warm-up or as part of a programmed workout",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "alt7",
+        "e68",
+        "e77",
+        "e74",
+        "e90",
+        "e56",
+        "e60",
+        "emubvaklw3nw18"
+      ]
+    },
+    {
+      "id": "e70",
+      "name": "Pull ups",
+      "machine": "Bodyweight",
+      "muscleGroup": "Back",
+      "defaultSets": "4",
+      "defaultReps": "12, 12, 10, 9 (ladder)",
+      "refNote": "Currently bodyweight only (elbow injury) — was adding 20 lbs before",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "alt3",
+        "e55",
+        "e44",
+        "e52",
+        "e78"
+      ]
+    },
+    {
+      "id": "e71",
+      "name": "DB Spider Curls",
+      "machine": "DB",
+      "muscleGroup": "Biceps",
+      "defaultSets": "3",
+      "defaultReps": "10",
+      "refNote": "45 DS",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e91",
+        "e62",
+        "e72"
+      ]
+    },
+    {
+      "id": "e72",
+      "name": "Biceps DB Incline Curl (alternating arms)",
+      "machine": "DB",
+      "muscleGroup": "Biceps",
+      "defaultSets": "3",
+      "defaultReps": "12",
+      "refNote": "Seated: 40 lbs per arm. Standing: 45 lbs, dropset",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e62",
+        "e71",
+        "e73"
+      ]
+    },
+    {
+      "id": "e73",
+      "name": "Biceps DB Standing Trap Set (123454321)",
+      "machine": "DB",
+      "muscleGroup": "Biceps",
+      "defaultSets": "1",
+      "defaultReps": "To failure, tempo pyramid: 1s,2s,3s,4s,5s,4s,3s,2s,1s per rep",
+      "refNote": "45 lbs, dropset",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e61",
+        "e91",
+        "e62",
+        "e72"
+      ]
+    },
+    {
+      "id": "e74",
+      "name": "Chest Press - DB",
+      "machine": "DB",
+      "muscleGroup": "Chest",
+      "defaultSets": "4",
+      "defaultReps": "5, 10, 10, 20",
+      "refNote": "75 lb dumbbells x2",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e68",
+        "e90",
+        "e69"
+      ]
+    },
+    {
+      "id": "e75",
+      "name": "Hi-Lo Crossover chest",
+      "machine": "Cable",
+      "muscleGroup": "Chest",
+      "defaultSets": "3",
+      "defaultReps": "10",
+      "refNote": "60 lbs per side",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e66",
+        "e76",
+        "e67"
+      ]
+    },
+    {
+      "id": "e76",
+      "name": "Pec Fly",
+      "machine": "Hammer strength",
+      "muscleGroup": "Chest",
+      "defaultSets": "3",
+      "defaultReps": "10/12",
+      "refNote": "220",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "alt8",
+        "e66",
+        "e75",
+        "e67"
+      ]
+    },
+    {
+      "id": "e77",
+      "name": "Prison Pushups",
+      "machine": "Bodyweight",
+      "muscleGroup": "Chest",
+      "defaultSets": "1",
+      "defaultReps": "To failure",
+      "refNote": "Min 25, PR 38",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "alt9",
+        "e68",
+        "e69",
+        "e60"
+      ]
+    },
+    {
+      "id": "e78",
+      "name": "Supinated Pulldown",
+      "machine": "Cable",
+      "muscleGroup": "Back",
+      "defaultSets": "3",
+      "defaultReps": "To failure",
+      "refNote": "209 lbs, dropset",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e44",
+        "e52",
+        "e70",
+        "e45"
+      ]
+    },
+    {
+      "id": "e80",
+      "name": "Arnold Press - Shoulders",
+      "machine": "DB",
+      "muscleGroup": "Shoulders",
+      "defaultSets": "3",
+      "defaultReps": "10",
+      "refNote": "50 lbs x2, dropset",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e96",
+        "e86",
+        "e81"
+      ]
+    },
+    {
+      "id": "e81",
+      "name": "Overhead Press",
+      "machine": "Bar",
+      "muscleGroup": "Shoulders",
+      "defaultSets": "3",
+      "defaultReps": "10",
+      "refNote": "105",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e80",
+        "e86"
+      ]
+    },
+    {
+      "id": "e82",
+      "name": "Front Delt (seated slow swing)",
+      "machine": "Free Weights",
+      "muscleGroup": "Shoulders",
+      "defaultSets": "3",
+      "defaultReps": "12",
+      "refNote": "10",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e100"
+      ]
+    },
+    {
+      "id": "e83",
+      "name": "Gorilla Row",
+      "machine": "Kettlebell",
+      "muscleGroup": "Back",
+      "defaultSets": "3",
+      "defaultReps": "10",
+      "refNote": "60 lbs",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e51",
+        "alt1",
+        "e93"
+      ]
+    },
+    {
+      "id": "e84",
+      "name": "Rear Deltoid",
+      "machine": "Hammer strength",
+      "muscleGroup": "Shoulders",
+      "defaultSets": "3",
+      "defaultReps": "10/12",
+      "refNote": "180",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e98",
+        "e50",
+        "e53"
+      ]
+    },
+    {
+      "id": "e85",
+      "name": "High Row (Plate-Loaded)",
+      "machine": "Hammer strength",
+      "muscleGroup": "Back",
+      "defaultSets": "3",
+      "defaultReps": "10",
+      "refNote": "120 lbs per side. Independent arms, pull from a high angle — hits the serratus",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e43",
+        "e54",
+        "e51"
+      ]
+    },
+    {
+      "id": "e86",
+      "name": "Shoulder Press",
+      "machine": "Hammer strength",
+      "muscleGroup": "Shoulders",
+      "defaultSets": "3",
+      "defaultReps": "6",
+      "refNote": "70 lbs, dropset",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e80",
+        "e96",
+        "e81"
+      ]
+    },
+    {
+      "id": "e87",
+      "name": "Upright Row (Trap Bar Shrugs)",
+      "machine": "Trap Bar",
+      "muscleGroup": "Shoulders",
+      "defaultSets": "3",
+      "defaultReps": "10",
+      "refNote": "105 lbs, dropset",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e53",
+        "e97"
+      ]
+    },
+    {
+      "id": "e88",
+      "name": "Triceps Extension",
+      "machine": "Hammer strength",
+      "muscleGroup": "Triceps",
+      "defaultSets": "3",
+      "defaultReps": "12",
+      "refNote": "70 lbs per side",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e47",
+        "e59",
+        "e58"
+      ]
+    },
+    {
+      "id": "e89",
+      "name": "Waiter Curl Biceps",
+      "machine": "Cable (Rope)",
+      "muscleGroup": "Biceps",
+      "defaultSets": "3",
+      "defaultReps": "10",
+      "refNote": "60.5 lbs",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e63",
+        "e64"
+      ]
+    },
+    {
+      "id": "e90",
+      "name": "Wide Chest Press Seated",
+      "machine": "Hammer strength",
+      "muscleGroup": "Chest",
+      "defaultSets": "4",
+      "defaultReps": "5, 10, 10, 20",
+      "refNote": "100 lbs per side",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e74",
+        "e68",
+        "e69"
+      ]
+    },
+    {
+      "id": "e91",
+      "name": "Preacher Curls",
+      "machine": "EZ Bar",
+      "muscleGroup": "Biceps",
+      "defaultSets": "3",
+      "defaultReps": "10",
+      "refNote": "25 lb plates per side + bar",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e61",
+        "e73",
+        "e71"
+      ]
+    },
+    {
+      "id": "e92",
+      "name": "Incline Chest Press (Precor)",
+      "machine": "Precor",
+      "muscleGroup": "Chest",
+      "defaultSets": "3",
+      "defaultReps": "10",
+      "refNote": "70 lbs per side",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e65"
+      ]
+    },
+    {
+      "id": "alt1",
+      "name": "Chest Supported DB Row",
+      "machine": "DB",
+      "muscleGroup": "Back",
+      "defaultSets": "3",
+      "defaultReps": "6-8",
+      "refNote": "DB95",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e51",
+        "alt2",
+        "e93",
+        "e43",
+        "e54",
+        "e83"
+      ]
+    },
+    {
+      "id": "alt2",
+      "name": "Landmine Row",
+      "machine": "Free Weights",
+      "muscleGroup": "Back",
+      "defaultSets": "3",
+      "defaultReps": "6-8",
+      "refNote": "L135+Barbell weight",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e51",
+        "alt1",
+        "e93"
+      ]
+    },
+    {
+      "id": "alt3",
+      "name": "Chin ups",
+      "machine": "Bodyweight",
+      "muscleGroup": "Back",
+      "defaultSets": "4",
+      "defaultReps": "12, 12, 10, 9 (ladder)",
+      "refNote": "Currently bodyweight only (elbow injury) — was adding 20 lbs before",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e70",
+        "e44",
+        "e52"
+      ]
+    },
+    {
+      "id": "alt4",
+      "name": "Angled Leg Press",
+      "machine": "Hammer strength",
+      "muscleGroup": "Legs",
+      "defaultSets": "3",
+      "defaultReps": "12",
+      "refNote": "140/590 High 590 Low",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e14"
+      ]
+    },
+    {
+      "id": "alt5",
+      "name": "SFB Curls (Slick Floor Bridge Curls)",
+      "machine": "",
+      "muscleGroup": "Legs",
+      "defaultSets": "3",
+      "defaultReps": "10",
+      "refNote": "200",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e5"
+      ]
+    },
+    {
+      "id": "alt6",
+      "name": "DB Triceps Kickbacks",
+      "machine": "DB",
+      "muscleGroup": "Triceps",
+      "defaultSets": "3",
+      "defaultReps": "12",
+      "refNote": "",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e49"
+      ]
+    },
+    {
+      "id": "alt7",
+      "name": "1.5 Dips Ladder",
+      "machine": "Bodyweight",
+      "muscleGroup": "Chest",
+      "defaultSets": "3",
+      "defaultReps": "To failure",
+      "refNote": "1.5-rep style (full rep + half rep counts as one)",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e69",
+        "e68",
+        "emubvaklw3nw18"
+      ]
+    },
+    {
+      "id": "alt8",
+      "name": "Incline Cable Press",
+      "machine": "Cable",
+      "muscleGroup": "Chest",
+      "defaultSets": "3",
+      "defaultReps": "10/12",
+      "refNote": "",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e76",
+        "e65"
+      ]
+    },
+    {
+      "id": "alt9",
+      "name": "Cobra Pushups",
+      "machine": "Bodyweight",
+      "muscleGroup": "Triceps",
+      "defaultSets": "1",
+      "defaultReps": "To failure",
+      "refNote": "Min 25, PR 38",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e77"
+      ]
+    },
+    {
+      "id": "alt10",
+      "name": "Standing Smith Machine Calf Raise",
+      "machine": "Smith",
+      "muscleGroup": "Legs",
+      "defaultSets": "2-3",
+      "defaultReps": "10-12",
+      "refNote": "93 lbs plate per side + Smith machine bar weight",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e6",
+        "e13"
+      ]
+    },
+    {
+      "id": "e93",
+      "name": "T-Bar Row",
+      "machine": "Free Weights",
+      "muscleGroup": "Back",
+      "defaultSets": "3",
+      "defaultReps": "6, 6, 7",
+      "refNote": "135 lbs",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e51",
+        "alt1",
+        "alt2",
+        "e83"
+      ]
+    },
+    {
+      "id": "alt11",
+      "name": "Incline Barbell Press",
+      "machine": "Free Weights",
+      "muscleGroup": "Chest",
+      "defaultSets": "4",
+      "defaultReps": "5, 10, 10, 20 (hit 20 on last set = increase weight next time)",
+      "refNote": "135 lbs, 45° incline",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e65"
+      ]
+    },
+    {
+      "id": "e94",
+      "name": "One Leg Hip Thrust",
+      "machine": "Free Weights",
+      "muscleGroup": "Legs",
+      "defaultSets": "3",
+      "defaultReps": "10",
+      "refNote": "45 lbs per side",
+      "seedPR": null,
+      "archived": false,
+      "supersetWith": [
+        "e95"
+      ],
+      "alternateIds": [
+        "e10"
+      ]
+    },
+    {
+      "id": "e95",
+      "name": "Reverse Lunges (DB)",
+      "machine": "Free Weights",
+      "muscleGroup": "Legs",
+      "defaultSets": "3",
+      "defaultReps": "10",
+      "refNote": "25 lbs per side",
+      "seedPR": null,
+      "archived": false,
+      "supersetWith": [
+        "e94"
+      ],
+      "alternateIds": [
+        "e4"
+      ]
+    },
+    {
+      "id": "sug1",
+      "name": "Zottman Curl",
+      "machine": "DB",
+      "muscleGroup": "Biceps",
+      "defaultSets": "3",
+      "defaultReps": "10",
+      "refNote": "",
+      "seedPR": null,
+      "archived": false,
+      "suggested": true,
+      "suggestedNote": "Curl up palms-up, rotate at the top, lower palms-down. Often featured by Athlean-X for building the forearms and elbow tendons alongside the biceps.",
+      "alternateIds": []
+    },
+    {
+      "id": "sug2",
+      "name": "Kickstand RDL",
+      "machine": "Free Weights",
+      "muscleGroup": "Legs",
+      "defaultSets": "3",
+      "defaultReps": "8-10 per side",
+      "refNote": "",
+      "seedPR": null,
+      "archived": false,
+      "suggested": true,
+      "suggestedNote": "A single-leg-biased RDL with the back foot lightly kickstanded for balance. Common in joint-friendly strength coaching like Judd Lienhard's, and a natural fit for training one side at a time.",
+      "alternateIds": []
+    },
+    {
+      "id": "sug3",
+      "name": "Devil Press",
+      "machine": "DB",
+      "muscleGroup": "Core",
+      "defaultSets": "3",
+      "defaultReps": "8-10",
+      "refNote": "",
+      "seedPR": null,
+      "archived": false,
+      "suggested": true,
+      "suggestedNote": "Burpee into a double dumbbell snatch overhead. A staple of Marcus Filly's functional bodybuilding style for full-body conditioning.",
+      "alternateIds": []
+    },
+    {
+      "id": "emu5o2pdv2nda9",
+      "name": "Decline bench - Abdominals",
+      "machine": "Nautilus",
+      "muscleGroup": "Core",
+      "defaultSets": "2",
+      "defaultReps": "20",
+      "refNote": "",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e25"
+      ]
+    },
+    {
+      "id": "e96",
+      "name": "Dumbbell Single-Arm Overhead Press",
+      "machine": "DB",
+      "muscleGroup": "Shoulders",
+      "defaultSets": "2",
+      "defaultReps": "6-8, per arm, to form failure",
+      "refNote": "40 lb dumbbell",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e81",
+        "e80",
+        "e86"
+      ]
+    },
+    {
+      "id": "e97",
+      "name": "Dumbbell Lateral Raise",
+      "machine": "DB",
+      "muscleGroup": "Shoulders",
+      "defaultSets": "3",
+      "defaultReps": "10, then partials with bent elbows once straight-arm reps fail",
+      "refNote": "Slight forward lean, thumbs over pinkies",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e99",
+        "e87"
+      ]
+    },
+    {
+      "id": "e98",
+      "name": "Dumbbell Rear Delt Row",
+      "machine": "DB",
+      "muscleGroup": "Shoulders",
+      "defaultSets": "2",
+      "defaultReps": "10-12",
+      "refNote": "30 lbs per arm. Brace well to limit momentum from the rest of the back",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e84",
+        "e50",
+        "e53"
+      ]
+    },
+    {
+      "id": "e99",
+      "name": "Dumbbell Cheat Lateral Raise",
+      "machine": "DB",
+      "muscleGroup": "Shoulders",
+      "defaultSets": "3",
+      "defaultReps": "8, form failure",
+      "refNote": "35 lbs per arm (starting guess). Slight body momentum to lift, control the lowering phase",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e97"
+      ]
+    },
+    {
+      "id": "e100",
+      "name": "Incline Dumbbell Front Raise",
+      "machine": "DB",
+      "muscleGroup": "Shoulders",
+      "defaultSets": "2-3",
+      "defaultReps": "10-12, then partials",
+      "refNote": "25 lbs per arm. On an incline bench for constant tension; Cavaliere's pick when a cable machine isn't available",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e82"
+      ]
+    },
+    {
+      "id": "emu8k4a5z8gwzw",
+      "name": "GHD Back Extension",
+      "machine": "GHD",
+      "muscleGroup": "Legs",
+      "defaultSets": "3",
+      "defaultReps": "10",
+      "refNote": "",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e2",
+        "e1",
+        "e10"
+      ]
+    },
+    {
+      "id": "emu9w7wa26gqat",
+      "name": "Banded Speed Zercher Squats",
+      "machine": "Band + Barbell",
+      "muscleGroup": "Legs",
+      "defaultSets": "5",
+      "defaultReps": "6",
+      "refNote": "",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": []
+    },
+    {
+      "id": "emu9w9a7rjst3s",
+      "name": "20 yard Heavy Sled Push",
+      "machine": "Sled",
+      "muscleGroup": "Legs",
+      "defaultSets": "8",
+      "defaultReps": "1",
+      "refNote": "",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": []
+    },
+    {
+      "id": "emu9wq36v62mcb",
+      "name": "Glute Ham Raise",
+      "machine": "GHD",
+      "muscleGroup": "Legs",
+      "defaultSets": "3",
+      "defaultReps": "7",
+      "refNote": "",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": []
+    },
+    {
+      "id": "emubvaklw3nw18",
+      "name": "Seated Dip",
+      "machine": "Machine",
+      "muscleGroup": "Triceps",
+      "defaultSets": "3",
+      "defaultReps": "10",
+      "refNote": "",
+      "seedPR": null,
+      "archived": false,
+      "alternateIds": [
+        "e69",
+        "alt7",
+        "e60",
+        "e56"
+      ]
+    }
+  ],
+  "programs": [
+    {
+      "id": "p1",
+      "name": "AX BACK 1",
+      "exerciseIds": [
+        "e43",
+        "e44",
+        "e45",
+        "e46",
+        "e70"
+      ],
+      "archived": false
+    },
+    {
+      "id": "p2",
+      "name": "AX BACK 2",
+      "exerciseIds": [
+        "e50",
+        "e93",
+        "e52",
+        "e53",
+        "e54",
+        "e55"
+      ],
+      "archived": false
+    },
+    {
+      "id": "p3",
+      "name": "AX BICEPS 1",
+      "exerciseIds": [
+        "e61",
+        "e62",
+        "e63",
+        "e64"
+      ],
+      "archived": false
+    },
+    {
+      "id": "p4",
+      "name": "AX BICEPS 2",
+      "exerciseIds": [
+        "e71",
+        "e72",
+        "e73"
+      ],
+      "archived": false
+    },
+    {
+      "id": "p5",
+      "name": "AX CHEST 1",
+      "exerciseIds": [
+        "e65",
+        "e66",
+        "e67",
+        "e68",
+        "e69"
+      ],
+      "archived": false
+    },
+    {
+      "id": "p6",
+      "name": "AX CHEST 2",
+      "exerciseIds": [
+        "e74",
+        "e75",
+        "e76",
+        "alt7",
+        "e77"
+      ],
+      "archived": false
+    },
+    {
+      "id": "p7",
+      "name": "AX L1",
+      "exerciseIds": [
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6"
+      ],
+      "archived": false
+    },
+    {
+      "id": "p8",
+      "name": "AX L2",
+      "exerciseIds": [
+        "e7",
+        "e8",
+        "e9",
+        "e10",
+        "e11",
+        "e12",
+        "e13"
+      ],
+      "archived": false
+    },
+    {
+      "id": "p9",
+      "name": "AX TRICEPS 1",
+      "exerciseIds": [
+        "e47",
+        "e48",
+        "e49",
+        "alt9"
+      ],
+      "archived": false
+    },
+    {
+      "id": "p10",
+      "name": "AX TRICEPS 2",
+      "exerciseIds": [
+        "e56",
+        "e57",
+        "e58",
+        "e59",
+        "e60"
+      ],
+      "archived": false
+    },
+    {
+      "id": "p11",
+      "name": "JONNI - BACK",
+      "exerciseIds": [
+        "e78"
+      ],
+      "archived": false
+    },
+    {
+      "id": "p12",
+      "name": "AX Shoulders 1",
+      "exerciseIds": [
+        "e96",
+        "e97",
+        "e98"
+      ],
+      "archived": false
+    },
+    {
+      "id": "p13",
+      "name": "AX Shoulders 2",
+      "exerciseIds": [
+        "e99",
+        "e100",
+        "e50"
+      ],
+      "archived": false
+    },
+    {
+      "id": "pmu9wbo238s7ke",
+      "name": "Judd Lienhard Leg 1",
+      "exerciseIds": [
+        "emu9w7wa26gqat",
+        "emu9w9a7rjst3s",
+        "emu9wq36v62mcb"
+      ],
+      "archived": false
+    }
+  ],
+  "logs": [
+    {
+      "id": "logmu5obs2beqqhw",
+      "date": "2026-09-17",
+      "exerciseId": "e43",
+      "plannedExerciseId": null,
+      "programIds": [
+        "p1",
+        "p3"
+      ],
+      "sets": [
+        {
+          "weight": 143,
+          "kind": "straight",
+          "reps": "6"
+        },
+        {
+          "weight": 143,
+          "kind": "straight",
+          "reps": "8"
+        },
+        {
+          "weight": 143,
+          "kind": "straight",
+          "reps": "10"
+        }
+      ],
+      "note": "",
+      "ts": 1789658271443
+    },
+    {
+      "id": "logmu5obs2bc8nhr",
+      "date": "2026-09-17",
+      "exerciseId": "e44",
+      "plannedExerciseId": null,
+      "programIds": [
+        "p1",
+        "p3"
+      ],
+      "sets": [
+        {
+          "weight": 209,
+          "kind": "straight",
+          "reps": "6"
+        },
+        {
+          "weight": 186,
+          "kind": "straight",
+          "reps": "8"
+        },
+        {
+          "weight": 186,
+          "kind": "DS",
+          "reps": "10"
+        }
+      ],
+      "note": "",
+      "ts": 1789658271443
+    },
+    {
+      "id": "logmu5obs2bfhdk5",
+      "date": "2026-09-17",
+      "exerciseId": "e45",
+      "plannedExerciseId": null,
+      "programIds": [
+        "p1",
+        "p3"
+      ],
+      "sets": [
+        {
+          "weight": 67,
+          "kind": "straight",
+          "reps": "10"
+        },
+        {
+          "weight": 72,
+          "kind": "straight",
+          "reps": "10"
+        },
+        {
+          "weight": 72,
+          "kind": "straight",
+          "reps": "10"
+        }
+      ],
+      "note": "",
+      "ts": 1789658271443
+    },
+    {
+      "id": "logmu5obs2bd0mnj",
+      "date": "2026-09-17",
+      "exerciseId": "e46",
+      "plannedExerciseId": null,
+      "programIds": [
+        "p1",
+        "p3"
+      ],
+      "sets": [
+        {
+          "weight": 75,
+          "kind": "straight",
+          "reps": "8"
+        },
+        {
+          "weight": 75,
+          "kind": "straight",
+          "reps": "9"
+        },
+        {
+          "weight": 75,
+          "kind": "straight",
+          "reps": "9"
+        }
+      ],
+      "note": "",
+      "ts": 1789658271443
+    },
+    {
+      "id": "logmu5obs2b25bia",
+      "date": "2026-09-17",
+      "exerciseId": "e70",
+      "plannedExerciseId": null,
+      "programIds": [
+        "p1",
+        "p3"
+      ],
+      "sets": [
+        {
+          "weight": 0,
+          "kind": "DS",
+          "reps": "6"
+        },
+        {
+          "weight": 0,
+          "kind": "straight",
+          "reps": "4"
+        }
+      ],
+      "note": "",
+      "ts": 1789658271443
+    },
+    {
+      "id": "logmu5obs2besjhm",
+      "date": "2026-09-17",
+      "exerciseId": "e61",
+      "plannedExerciseId": null,
+      "programIds": [
+        "p1",
+        "p3"
+      ],
+      "sets": [
+        {
+          "split": true,
+          "left": "40",
+          "right": "35",
+          "kind": "DS"
+        },
+        {
+          "split": true,
+          "left": "40",
+          "right": "35",
+          "kind": "DS"
+        },
+        {
+          "split": true,
+          "left": "40",
+          "right": "35",
+          "kind": "DS"
+        }
+      ],
+      "note": "",
+      "ts": 1789658271443
+    },
+    {
+      "id": "logmu5obs2bq70zj",
+      "date": "2026-09-17",
+      "exerciseId": "e62",
+      "plannedExerciseId": null,
+      "programIds": [
+        "p1",
+        "p3"
+      ],
+      "sets": [
+        {
+          "split": true,
+          "left": "40",
+          "right": "35",
+          "kind": "DS"
+        },
+        {
+          "split": true,
+          "left": "40",
+          "right": "35",
+          "kind": "DS"
+        },
+        {
+          "split": true,
+          "left": "40",
+          "right": "35",
+          "kind": "DS"
+        }
+      ],
+      "note": "37.5 + 32.5, DS",
+      "ts": 1789658271443
+    },
+    {
+      "id": "logmu5obs2balba1",
+      "date": "2026-09-17",
+      "exerciseId": "e63",
+      "plannedExerciseId": null,
+      "programIds": [
+        "p1",
+        "p3"
+      ],
+      "sets": [
+        {
+          "split": true,
+          "left": "33",
+          "right": "33",
+          "kind": "straight"
+        },
+        {
+          "split": true,
+          "left": "33",
+          "right": "33",
+          "kind": "straight"
+        },
+        {
+          "split": true,
+          "left": "33",
+          "right": "33",
+          "kind": "straight"
+        }
+      ],
+      "note": "",
+      "ts": 1789658271443
+    },
+    {
+      "id": "logmu5obs2b3b074",
+      "date": "2026-09-17",
+      "exerciseId": "e64",
+      "plannedExerciseId": null,
+      "programIds": [
+        "p1",
+        "p3"
+      ],
+      "sets": [
+        {
+          "weight": 187,
+          "kind": "DS",
+          "reps": "9"
+        }
+      ],
+      "note": "",
+      "ts": 1789658271443
+    },
+    {
+      "id": "logmu5obs2b2z0wj",
+      "date": "2026-09-17",
+      "exerciseId": "emu5o2pdv2nda9",
+      "plannedExerciseId": null,
+      "programIds": [
+        "p1",
+        "p3"
+      ],
+      "sets": [
+        {
+          "weight": 0,
+          "kind": "straight",
+          "reps": "20"
+        },
+        {
+          "weight": 25,
+          "kind": "straight",
+          "reps": "13"
+        }
+      ],
+      "note": "Plate to chest",
+      "ts": 1789658271443
+    },
+    {
+      "id": "logmu5obs2bww9bm",
+      "date": "2026-09-17",
+      "exerciseId": "e25",
+      "plannedExerciseId": null,
+      "programIds": [
+        "p1",
+        "p3"
+      ],
+      "sets": [
+        {
+          "weight": 0,
+          "kind": "straight",
+          "reps": "23"
+        }
+      ],
+      "note": "",
+      "ts": 1789658271443
+    },
+    {
+      "id": "logmu8ku7h26q9vr",
+      "date": "2026-09-19",
+      "exerciseId": "e7",
+      "plannedExerciseId": null,
+      "programIds": [
+        "p8"
+      ],
+      "sets": [
+        {
+          "weight": 25,
+          "kind": "straight",
+          "reps": "10"
+        },
+        {
+          "weight": 25,
+          "kind": "straight",
+          "reps": "10"
+        },
+        {
+          "weight": 25,
+          "kind": "straight",
+          "reps": "10"
+        }
+      ],
+      "note": "Hole#5. Pause at top if possible.",
+      "ts": 1789833811286
+    },
+    {
+      "id": "logmu8ku7h24gqgi",
+      "date": "2026-09-19",
+      "exerciseId": "e8",
+      "plannedExerciseId": null,
+      "programIds": [
+        "p8"
+      ],
+      "sets": [
+        {
+          "weight": 295,
+          "kind": "straight",
+          "reps": "7"
+        },
+        {
+          "weight": 295,
+          "kind": "straight",
+          "reps": "7"
+        },
+        {
+          "weight": 315,
+          "kind": "straight",
+          "reps": ""
+        }
+      ],
+      "note": "70% = 315 9/18/26",
+      "ts": 1789833811286
+    },
+    {
+      "id": "logmu8ku7h21pdr1",
+      "date": "2026-09-19",
+      "exerciseId": "e10",
+      "plannedExerciseId": null,
+      "programIds": [
+        "p8"
+      ],
+      "sets": [
+        {
+          "weight": 180,
+          "kind": "straight",
+          "reps": "10"
+        },
+        {
+          "weight": 180,
+          "kind": "straight",
+          "reps": "10"
+        },
+        {
+          "weight": 180,
+          "kind": "straight",
+          "reps": "10"
+        }
+      ],
+      "note": "",
+      "ts": 1789833811286
+    },
+    {
+      "id": "logmu8ku7h29ao4t",
+      "date": "2026-09-19",
+      "exerciseId": "e41",
+      "plannedExerciseId": null,
+      "programIds": [
+        "p8"
+      ],
+      "sets": [
+        {
+          "split": true,
+          "left": "35",
+          "right": "35",
+          "kind": "straight"
+        },
+        {
+          "split": true,
+          "left": "35",
+          "right": "35",
+          "kind": "straight"
+        },
+        {
+          "weight": 35,
+          "kind": "straight",
+          "reps": "10"
+        }
+      ],
+      "note": "",
+      "ts": 1789833811286
+    },
+    {
+      "id": "logmu8ku7h2nwnto",
+      "date": "2026-09-19",
+      "exerciseId": "emu5o2pdv2nda9",
+      "plannedExerciseId": null,
+      "programIds": [
+        "p8"
+      ],
+      "sets": [
+        {
+          "weight": 0,
+          "kind": "straight",
+          "reps": "30"
+        },
+        {
+          "weight": 25,
+          "kind": "straight",
+          "reps": "7"
+        }
+      ],
+      "note": "",
+      "ts": 1789833811286
+    },
+    {
+      "id": "logmu8ku7h2idtc4",
+      "date": "2026-09-19",
+      "exerciseId": "e25",
+      "plannedExerciseId": null,
+      "programIds": [
+        "p8"
+      ],
+      "sets": [
+        {
+          "weight": 0,
+          "kind": "straight",
+          "reps": "13"
+        }
+      ],
+      "note": "",
+      "ts": 1789833811286
+    },
+    {
+      "id": "logmubvnhay7qfw8",
+      "date": "2026-09-21",
+      "exerciseId": "e74",
+      "plannedExerciseId": null,
+      "programIds": [
+        "p6",
+        "p10"
+      ],
+      "sets": [
+        {
+          "weight": 75,
+          "kind": "straight",
+          "reps": "5"
+        },
+        {
+          "weight": 75,
+          "kind": "straight",
+          "reps": "9"
+        },
+        {
+          "weight": 75,
+          "kind": "straight",
+          "reps": "6"
+        },
+        {
+          "weight": 70,
+          "kind": "straight",
+          "reps": "10"
+        }
+      ],
+      "note": "",
+      "ts": 1790033371738
+    },
+    {
+      "id": "logmubvnhaymv9yx",
+      "date": "2026-09-21",
+      "exerciseId": "e76",
+      "plannedExerciseId": "e75",
+      "programIds": [
+        "p6",
+        "p10"
+      ],
+      "sets": [
+        {
+          "weight": 220,
+          "kind": "straight",
+          "reps": "10"
+        },
+        {
+          "weight": 220,
+          "kind": "DS",
+          "reps": "10"
+        },
+        {
+          "weight": 205,
+          "kind": "DS",
+          "reps": "8"
+        }
+      ],
+      "note": "",
+      "ts": 1790033371738
+    },
+    {
+      "id": "logmubvnhayjfndc",
+      "date": "2026-09-21",
+      "exerciseId": "alt7",
+      "plannedExerciseId": null,
+      "programIds": [
+        "p6",
+        "p10"
+      ],
+      "sets": [
+        {
+          "weight": 0,
+          "kind": "straight",
+          "reps": "3"
+        },
+        {
+          "weight": 0,
+          "kind": "straight",
+          "reps": "3"
+        },
+        {
+          "weight": 0,
+          "kind": "straight",
+          "reps": "3"
+        }
+      ],
+      "note": "",
+      "ts": 1790033371738
+    },
+    {
+      "id": "logmubvnhayhmylu",
+      "date": "2026-09-21",
+      "exerciseId": "e56",
+      "plannedExerciseId": null,
+      "programIds": [
+        "p6",
+        "p10"
+      ],
+      "sets": [
+        {
+          "weight": 55,
+          "kind": "straight",
+          "reps": "10"
+        },
+        {
+          "weight": 55,
+          "kind": "straight",
+          "reps": "8"
+        },
+        {
+          "weight": 50,
+          "kind": "straight",
+          "reps": "8"
+        }
+      ],
+      "note": "",
+      "ts": 1790033371738
+    },
+    {
+      "id": "logmubvnhayp84n3",
+      "date": "2026-09-21",
+      "exerciseId": "e57",
+      "plannedExerciseId": null,
+      "programIds": [
+        "p6",
+        "p10"
+      ],
+      "sets": [
+        {
+          "weight": 70,
+          "kind": "straight",
+          "reps": "10"
+        },
+        {
+          "weight": 75,
+          "kind": "straight",
+          "reps": "10"
+        },
+        {
+          "weight": 75,
+          "kind": "straight",
+          "reps": "8"
+        }
+      ],
+      "note": "",
+      "ts": 1790033371738
+    },
+    {
+      "id": "logmubvnhayprvlh",
+      "date": "2026-09-21",
+      "exerciseId": "e58",
+      "plannedExerciseId": null,
+      "programIds": [
+        "p6",
+        "p10"
+      ],
+      "sets": [
+        {
+          "weight": 66,
+          "kind": "straight",
+          "reps": "10"
+        },
+        {
+          "weight": 66,
+          "kind": "straight",
+          "reps": "10"
+        },
+        {
+          "weight": 66,
+          "kind": "straight",
+          "reps": "10"
+        }
+      ],
+      "note": "",
+      "ts": 1790033371738
+    },
+    {
+      "id": "logmubvnhay9y4cn",
+      "date": "2026-09-21",
+      "exerciseId": "e59",
+      "plannedExerciseId": null,
+      "programIds": [
+        "p6",
+        "p10"
+      ],
+      "sets": [
+        {
+          "split": true,
+          "left": "30",
+          "right": "30",
+          "kind": "straight"
+        },
+        {
+          "split": true,
+          "left": "27.5",
+          "right": "27.5",
+          "kind": "straight"
+        },
+        {
+          "split": true,
+          "left": "27.5",
+          "right": "27.5",
+          "kind": "straight"
+        }
+      ],
+      "note": "",
+      "ts": 1790033371738
+    },
+    {
+      "id": "logmubvnhaymv6za",
+      "date": "2026-09-21",
+      "exerciseId": "e60",
+      "plannedExerciseId": null,
+      "programIds": [
+        "p6",
+        "p10"
+      ],
+      "sets": [
+        {
+          "weight": 185,
+          "kind": "straight",
+          "reps": "10"
+        }
+      ],
+      "note": "",
+      "ts": 1790033371738
+    },
+    {
+      "id": "logmubvnhay87lw9",
+      "date": "2026-09-21",
+      "exerciseId": "emu5o2pdv2nda9",
+      "plannedExerciseId": null,
+      "programIds": [
+        "p6",
+        "p10"
+      ],
+      "sets": [
+        {
+          "weight": 0,
+          "kind": "straight",
+          "reps": "25"
+        },
+        {
+          "weight": 25,
+          "kind": "straight",
+          "reps": "13"
+        }
+      ],
+      "note": "",
+      "ts": 1790033371738
+    },
+    {
+      "id": "logmuinjd6ewpzyh",
+      "date": "2026-09-26",
+      "exerciseId": "e2",
+      "plannedExerciseId": null,
+      "programIds": [
+        "p7"
+      ],
+      "sets": [
+        {
+          "weight": 425,
+          "kind": "straight",
+          "reps": "2"
+        },
+        {
+          "weight": 425,
+          "kind": "straight",
+          "reps": "2"
+        },
+        {
+          "weight": 435,
+          "kind": "straight",
+          "reps": "1"
+        },
+        {
+          "weight": 345,
+          "kind": "straight",
+          "reps": "7"
+        }
+      ],
+      "note": "",
+      "ts": 1790443006070
+    },
+    {
+      "id": "logmuinjd6ezz2yj",
+      "date": "2026-09-26",
+      "exerciseId": "e36",
+      "plannedExerciseId": "e3",
+      "programIds": [
+        "p7"
+      ],
+      "sets": [
+        {
+          "weight": 270,
+          "kind": "straight",
+          "reps": "8"
+        },
+        {
+          "weight": 180,
+          "kind": "straight",
+          "reps": "10"
+        },
+        {
+          "weight": 230,
+          "kind": "straight",
+          "reps": "8"
+        }
+      ],
+      "note": "Deep squat @115x2 (230 lbs) toes on line #7",
+      "ts": 1790443006070
+    },
+    {
+      "id": "logmuinjd6e9aipc",
+      "date": "2026-09-26",
+      "exerciseId": "e40",
+      "plannedExerciseId": "e4",
+      "programIds": [
+        "p7"
+      ],
+      "sets": [
+        {
+          "weight": 45,
+          "kind": "straight",
+          "reps": "8"
+        },
+        {
+          "weight": 45,
+          "kind": "straight",
+          "reps": "8"
+        },
+        {
+          "weight": 45,
+          "kind": "straight",
+          "reps": "8"
+        }
+      ],
+      "note": "45 lbs each hand 8 steps each side",
+      "ts": 1790443006070
+    },
+    {
+      "id": "logmuinjd6ere1k2",
+      "date": "2026-09-26",
+      "exerciseId": "e5",
+      "plannedExerciseId": null,
+      "programIds": [
+        "p7"
+      ],
+      "sets": [
+        {
+          "split": true,
+          "left": "110",
+          "right": "110",
+          "kind": "straight"
+        },
+        {
+          "split": true,
+          "left": "110",
+          "right": "110",
+          "kind": "straight"
+        },
+        {
+          "split": true,
+          "left": "110",
+          "right": "110",
+          "kind": "straight"
+        }
+      ],
+      "note": "Setting  C + M",
+      "ts": 1790443006070
+    },
+    {
+      "id": "logmuinjd6ep2zhp",
+      "date": "2026-09-26",
+      "exerciseId": "e16",
+      "plannedExerciseId": null,
+      "programIds": [
+        "p7"
+      ],
+      "sets": [
+        {
+          "split": true,
+          "left": "80",
+          "right": "80",
+          "kind": "straight"
+        }
+      ],
+      "note": "1 mn",
+      "ts": 1790443006070
+    },
+    {
+      "id": "logmuinjd6e4flf3",
+      "date": "2026-09-26",
+      "exerciseId": "emu5o2pdv2nda9",
+      "plannedExerciseId": null,
+      "programIds": [
+        "p7"
+      ],
+      "sets": [
+        {
+          "weight": 0,
+          "kind": "straight",
+          "reps": "15"
+        },
+        {
+          "weight": 0,
+          "kind": "straight",
+          "reps": "8"
+        }
+      ],
+      "note": "1st was reversed declined. Need to create exercise",
+      "ts": 1790443006070
+    }
+  ]
+}
