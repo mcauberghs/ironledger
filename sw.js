@@ -1,4 +1,4 @@
-const CACHE_NAME = "ironledger-v1";
+const CACHE_NAME = "ironledger-v2";
 const CORE_ASSETS = ["./", "./manifest.json", "./icon-192.png", "./icon-512.png", "./icon-512-maskable.png"];
 
 self.addEventListener("install", (event) => {
@@ -23,7 +23,7 @@ self.addEventListener("fetch", (event) => {
   // version when online), fall back to the cached copy when offline.
   if (req.mode === "navigate") {
     event.respondWith(
-      fetch(req)
+      fetch(req, { cache: "no-store" })
         .then((res) => {
           const copy = res.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
