@@ -12,6 +12,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.7/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
   :root {
     color-scheme: dark;
@@ -2352,9 +2353,26 @@ function SupersetSection({ exercise, exercises, setExercises }) {
   );
 }
 
+function saveFileToDevice(filename, blob) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
 function DataSyncSection({ exercises, programs, logs, setExercises, setPrograms, setLogs }) {
   const fileInputRef = useRef(null);
   const [status, setStatus] = useState("");
+
+  const stampNow = () => {
+    const now = new Date();
+    const pad = (n) => String(n).padStart(2, "0");
+    return `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}`;
+  };
 
   const doExport = async () => {
     setStatus("");
@@ -2364,10 +2382,7 @@ function DataSyncSection({ exercises, programs, logs, setExercises, setPrograms,
       programs,
       logs,
     };
-    const now = new Date();
-    const pad = (n) => String(n).padStart(2, "0");
-    const stamp = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}`;
-    const filename = `IronLedger_Backup_${stamp}.json`;
+    const filename = `IronLedger_Backup_${stampNow()}.json`;
     try {
       const downloads = await (window.claude && window.claude.use ? window.claude.use("downloads") : Promise.resolve(null));
       if (downloads) {
@@ -2377,9 +2392,69 @@ function DataSyncSection({ exercises, programs, logs, setExercises, setPrograms,
           return;
         }
       }
-      setStatus("Download isn't available here. Try opening this page in your browser instead of the chat preview.");
+      saveFileToDevice(filename, new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" }));
+      setStatus("Saved to your Downloads.");
     } catch (e) {
-      setStatus("Couldn't save the file. Try again, or open this page in your browser.");
+      setStatus("Couldn't save the file. Try again.");
+    }
+  };
+
+  const doExportExcel = async () => {
+    setStatus("");
+    try {
+      const exMap = {};
+      exercises.forEach((e) => { exMap[e.id] = e; });
+      const progMap = {};
+      programs.forEach((p) => { progMap[p.id] = p; });
+
+      const exerciseRows = exercises.map((e) => ({
+        Name: e.name,
+        Machine: e.machine || "",
+        "Muscle Group": e.muscleGroup || "",
+        "Default Sets": e.defaultSets || "",
+        "Default Reps": e.defaultReps || "",
+        "Reference Note": e.refNote || "",
+        Archived: e.archived ? "Yes" : "No",
+      }));
+
+      const programRows = programs.map((p) => ({
+        Name: p.name,
+        Exercises: (p.exerciseIds || []).map((id) => (exMap[id] ? exMap[id].name : id)).join(", "),
+        Archived: p.archived ? "Yes" : "No",
+      }));
+
+      const logRows = [];
+      logs.forEach((log) => {
+        const ex = exMap[log.exerciseId];
+        const plannedEx = log.plannedExerciseId ? exMap[log.plannedExerciseId] : null;
+        const progNames = (log.programIds || []).map((id) => (progMap[id] ? progMap[id].name : id)).join(", ");
+        (log.sets || []).forEach((s, i) => {
+          const weight = s.split ? `L:${s.left ?? ""} R:${s.right ?? ""}` : (s.weight ?? "");
+          logRows.push({
+            Date: log.date || "",
+            Exercise: ex ? ex.name : log.exerciseId,
+            "Planned As": plannedEx && plannedEx.id !== log.exerciseId ? plannedEx.name : "",
+            Program: progNames,
+            "Set #": i + 1,
+            Kind: s.kind || "",
+            Weight: weight,
+            Reps: s.reps ?? "",
+            Note: log.note || "",
+          });
+        });
+      });
+
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(logRows), "Workout Logs");
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(exerciseRows), "Exercises");
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(programRows), "Programs");
+
+      const filename = `IronLedger_Export_${stampNow()}.xlsx`;
+      const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+      saveFileToDevice(filename, new Blob([wbout], { type: "application/octet-stream" }));
+      setStatus("Excel file saved to your Downloads.");
+    } catch (e) {
+      setStatus("Couldn't build the Excel file.");
     }
   };
 
@@ -2420,6 +2495,9 @@ function DataSyncSection({ exercises, programs, logs, setExercises, setPrograms,
         </button>
         <input ref={fileInputRef} type="file" accept="application/json" onChange={doImportFile} className="hidden" />
       </div>
+      <button onClick={doExportExcel} className="w-full py-2 rounded-lg bg-neutral-900 border border-neutral-800 text-sm text-neutral-300">
+        Export to Excel
+      </button>
       {status && <p className="text-xs text-teal-400">{status}</p>}
     </div>
   );
