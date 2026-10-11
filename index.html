@@ -1917,10 +1917,11 @@ function ExerciseDetailView({ exercise, exercises, setExercises, history, getSta
         />
       </div>
 
-      {history.some((l) => l.note && l.note.trim()) && (
+      {(
         <details className="bg-neutral-900 border border-neutral-800 rounded-xl p-3">
           <summary className="text-sm text-amber-500 cursor-pointer">All comments ({history.filter((l) => l.note && l.note.trim()).length})</summary>
           <div className="mt-2 space-y-2">
+            {!history.some((l) => l.note && l.note.trim()) && <div className="text-xs text-neutral-600">No comments yet for this exercise.</div>}
             {history.filter((l) => l.note && l.note.trim()).map((l) => (
               <div key={l.id} className="text-xs border-l-2 border-neutral-700 pl-2">
                 <div className="text-neutral-500">{formatDate(l.date)}</div>
