@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Iron Ledger version 45 (2026-10-11) -->
+<!-- Iron Ledger version 48 (2026-10-11) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -94,8 +94,15 @@ const repValues = (s) => {
   return isNaN(w) ? [] : [w];
 };
 
+const WARMUP_STEPS_DEFAULT = [
+  { pct: 40, reps: 8 },
+  { pct: 60, reps: 5 },
+  { pct: 80, reps: 2 },
+  { pct: 90, reps: 1, optional: true },
+];
+
 const formatRep = (s) => {
-  const suffix = s.kind === "DS" ? " DS" : "";
+  const suffix = s.kind === "DS" ? " DS" : s.kind === "F" ? " F" : s.kind === "W" ? " W" : "";
   const repsPart = s.reps ? ` x${s.reps}` : "";
   if (s.split) {
     return `L${s.left || "-"} / R${s.right || "-"}${suffix}${repsPart}`;
@@ -685,13 +692,17 @@ function App() {
     const entries = history[exerciseId] || [];
     let prStraight = null;
     let prDS = null;
+    let bestFail = null;
     let last = null;
     const ex = exerciseById[exerciseId];
     if (ex && typeof ex.seedPR === "number") prStraight = ex.seedPR;
     entries.forEach((entry) => {
       entry.sets.forEach((s) => {
         repValues(s).forEach((w) => {
-          if (s.kind === "DS") {
+          if (s.kind === "W") return;
+          if (s.kind === "F") {
+            if (bestFail === null || w > bestFail) bestFail = w;
+          } else if (s.kind === "DS") {
             if (prDS === null || w > prDS) prDS = w;
           } else {
             if (prStraight === null || w > prStraight) prStraight = w;
@@ -700,7 +711,7 @@ function App() {
       });
     });
     if (entries.length > 0) last = entries[0];
-    return { prStraight, prDS, last };
+    return { prStraight, prDS, bestFail, last };
   };
 
   if (!loaded) {
@@ -862,9 +873,9 @@ function TodayView({ exercises, setExercises, programs, draft, setDraft, logs, s
   const presetSets = (exerciseId) => {
     const stats = getStats(exerciseId);
     if (!stats.last) return [];
-    return stats.last.sets.map((s) => ({
+    return stats.last.sets.filter((s) => s.kind !== "W").map((s) => ({
       weight: s.split ? "" : s.weight !== undefined ? String(s.weight) : "",
-      kind: s.kind || "straight",
+      kind: s.kind === "F" || !s.kind ? "straight" : s.kind,
       split: !!s.split,
       left: s.split && s.left !== undefined ? String(s.left) : "",
       right: s.split && s.right !== undefined ? String(s.right) : "",
@@ -906,7 +917,7 @@ function TodayView({ exercises, setExercises, programs, draft, setDraft, logs, s
     updateEntry(key, (e) => {
       const prev = e.sets[e.sets.length - 1];
       const next = prev
-        ? { weight: prev.weight, kind: prev.kind, split: prev.split, left: prev.left, right: prev.right, reps: prev.reps, confirmed: false }
+        ? { weight: prev.weight, kind: prev.kind === "F" ? "straight" : prev.kind, split: prev.split, left: prev.left, right: prev.right, reps: prev.reps, confirmed: false }
         : { weight: "", kind: "straight", split: false, left: "", right: "", reps: "", confirmed: false };
       return { ...e, sets: [...e.sets, next] };
     });
@@ -975,18 +986,24 @@ function TodayView({ exercises, setExercises, programs, draft, setDraft, logs, s
     draft.entries.forEach((e) => {
       const validSets = e.sets.filter((s) => (s.split ? s.left !== "" || s.right !== "" : s.weight !== "" && s.weight !== null));
       const hasNote = e.note && e.note.trim() !== "";
-      if (validSets.length === 0 && !hasNote) return;
+      const warmSets = computeWarmups(exerciseById[e.exerciseId], e, getStats(e.exerciseId))
+        .filter((w) => w.done && w.shown !== "" && !isNaN(parseFloat(w.shown)))
+        .map((w) => ({ weight: parseFloat(w.shown), kind: "W", reps: String(w.step.reps) }));
+      if (validSets.length === 0 && !hasNote && warmSets.length === 0) return;
       newLogs.push({
         id: uid("log"),
         date: draft.date,
         exerciseId: e.exerciseId,
         plannedExerciseId: e.plannedExerciseId,
         programIds: draft.programIds,
-        sets: validSets.map((s) =>
-          s.split
-            ? { split: true, left: s.left, right: s.right, kind: s.kind }
-            : { weight: parseFloat(s.weight), kind: s.kind, reps: s.reps }
-        ),
+        sets: [
+          ...warmSets,
+          ...validSets.map((s) =>
+            s.split
+              ? { split: true, left: s.left, right: s.right, kind: s.kind }
+              : { weight: parseFloat(s.weight), kind: s.kind, reps: s.reps }
+          ),
+        ],
         note: hasNote ? e.note.trim() : "",
         ts: Date.now(),
       });
@@ -1155,9 +1172,10 @@ function TodayView({ exercises, setExercises, programs, draft, setDraft, logs, s
             <div className="flex gap-2 flex-wrap">
               {stats.prStraight !== null && <Badge tone="amber">PR {stats.prStraight}</Badge>}
               {stats.prDS !== null && <Badge tone="amber">PR DS {stats.prDS}</Badge>}
+              {stats.bestFail !== null && (stats.prStraight === null || stats.bestFail > stats.prStraight) && <Badge tone="red">Best attempt {stats.bestFail} (failed)</Badge>}
               {stats.last ? (
                 <Badge tone="teal">
-                  Last {stats.last.sets.map((s) => formatRep(s)).join(", ")} on {formatDate(stats.last.date)}
+                  Last {stats.last.sets.filter((s) => s.kind !== "W").map((s) => formatRep(s)).join(", ")} on {formatDate(stats.last.date)}
                 </Badge>
               ) : ex.refNote ? (
                 <Badge>Sheet ref: {ex.refNote}</Badge>
@@ -1227,6 +1245,12 @@ function TodayView({ exercises, setExercises, programs, draft, setDraft, logs, s
                         className={`px-2 py-1.5 ${s.kind === "DS" ? "bg-amber-500 text-neutral-950" : "text-neutral-400"}`}
                       >
                         DS
+                      </button>
+                      <button
+                        onClick={() => updateSet(entry.key, i, "kind", "F")}
+                        className={`px-2 py-1.5 ${s.kind === "F" ? "bg-red-600 text-white" : "text-neutral-400"}`}
+                      >
+                        F
                       </button>
                     </div>
                     <div className="flex-1" />
@@ -1913,12 +1937,21 @@ function ExerciseDetailView({ exercise, exercises, setExercises, history, getSta
             </div>
           </div>
         )}
+        {stats.bestFail !== null && (stats.prStraight === null || stats.bestFail > stats.prStraight) && (
+          <div className="bg-neutral-900 border border-red-900 rounded-xl px-3 py-2 flex items-center gap-2">
+            <Trophy size={14} className="text-red-500" />
+            <div>
+              <div className="text-[11px] text-neutral-500">Best attempt</div>
+              <div className="text-sm font-medium">{stats.bestFail} (failed)</div>
+            </div>
+          </div>
+        )}
         {stats.last && (
           <div className="bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2 flex items-center gap-2">
             <Clock size={14} className="text-teal-500" />
             <div>
               <div className="text-[11px] text-neutral-500">Last used, {formatDate(stats.last.date)}</div>
-              <div className="text-sm font-medium">{stats.last.sets.map((s) => formatRep(s)).join(", ")}</div>
+              <div className="text-sm font-medium">{stats.last.sets.filter((s) => s.kind !== "W").map((s) => formatRep(s)).join(", ")}</div>
             </div>
           </div>
         )}
@@ -1927,6 +1960,36 @@ function ExerciseDetailView({ exercise, exercises, setExercises, history, getSta
       {exercise.refNote && (
         <div className="text-xs text-neutral-500 bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2">Note: {exercise.refNote}</div>
       )}
+
+      <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-3 space-y-1.5">
+        <div className="flex items-center justify-between">
+          <div className="text-xs text-neutral-500">Warm-up ramp (8 x 40%, 5 x 60%, 2 x 80%, optional 1 x 90%)</div>
+          <button
+            onClick={() =>
+              setExercises(
+                exercises.map((x) => {
+                  if (x.id !== exercise.id) return x;
+                  if (x.warmupScheme) return { ...x, warmupScheme: null };
+                  return { ...x, warmupScheme: WARMUP_STEPS_DEFAULT, warmupBase: x.warmupBase || "" };
+                })
+              )
+            }
+            className={`text-xs px-2.5 py-1 rounded-lg border ${exercise.warmupScheme ? "border-sky-500 text-sky-400" : "border-neutral-700 text-neutral-400"}`}
+          >
+            {exercise.warmupScheme ? "On" : "Off"}
+          </button>
+        </div>
+        {exercise.warmupScheme && (
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-neutral-400">100% weight (used until you have a PR)</span>
+            <NumInput
+              value={exercise.warmupBase === undefined || exercise.warmupBase === null ? "" : String(exercise.warmupBase)}
+              onChange={(v) => setExercises(exercises.map((x) => (x.id === exercise.id ? { ...x, warmupBase: v === "" ? "" : parseFloat(v) || v } : x)))}
+              className="w-20 bg-neutral-800 rounded-lg px-2 py-1 text-sm border border-neutral-700"
+            />
+          </div>
+        )}
+      </div>
 
       <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-3 space-y-1.5">
         <div className="text-xs text-neutral-500">Machine setup (pin hole #, seat, handle...)</div>
@@ -1997,6 +2060,9 @@ function ExerciseDetailView({ exercise, exercises, setExercises, history, getSta
               </button>
               <button onClick={() => setQKind("DS")} className={`px-2.5 py-2 ${qKind === "DS" ? "bg-amber-500 text-neutral-950" : "text-neutral-400"}`}>
                 DS
+              </button>
+              <button onClick={() => setQKind("F")} className={`px-2.5 py-2 ${qKind === "F" ? "bg-red-600 text-white" : "text-neutral-400"}`}>
+                F
               </button>
             </div>
           </div>
@@ -2230,12 +2296,27 @@ function AlternatesSection({ exercise, exercises, setExercises }) {
   );
 }
 
+function computeWarmups(ex, entry, stats) {
+  if (!ex || !ex.warmupScheme) return [];
+  const hasT = entry.warmupTarget !== undefined && entry.warmupTarget !== "";
+  const target = parseFloat(hasT ? entry.warmupTarget : stats.prStraight ?? ex.warmupBase ?? "");
+  const over = entry.warmupWeights || {};
+  const done = entry.warmupDone || [];
+  return ex.warmupScheme.map((step, i) => {
+    const planned = isNaN(target) ? "" : String(Math.round((target * step.pct) / 100 / 5) * 5);
+    const shown = over[i] !== undefined ? over[i] : planned;
+    return { step, planned, shown, done: !!done[i] };
+  });
+}
+
 function WarmupBlock({ ex, entry, stats, updateEntry }) {
   const [open, setOpen] = useState(true);
   const defaultTarget = entry.warmupTarget !== undefined && entry.warmupTarget !== "" ? entry.warmupTarget : stats.prStraight ?? ex.warmupBase ?? "";
   const target = parseFloat(entry.warmupTarget !== undefined && entry.warmupTarget !== "" ? entry.warmupTarget : defaultTarget);
   const done = entry.warmupDone || [];
 
+  const wOver = entry.warmupWeights || {};
+  const setStepWeight = (i, val) => updateEntry(entry.key, (e) => ({ ...e, warmupWeights: { ...(e.warmupWeights || {}), [i]: val } }));
   const setTarget = (val) => updateEntry(entry.key, (e) => ({ ...e, warmupTarget: val }));
   const toggleDone = (i) => {
     const next = [...done];
@@ -2261,23 +2342,28 @@ function WarmupBlock({ ex, entry, stats, updateEntry }) {
           </div>
           <div className="space-y-1">
             {ex.warmupScheme.map((step, i) => {
-              const w = isNaN(target) ? null : Math.round((target * step.pct) / 100 / 5) * 5;
+              const planned = isNaN(target) ? "" : String(Math.round((target * step.pct) / 100 / 5) * 5);
+              const shown = wOver[i] !== undefined ? wOver[i] : planned;
               return (
-                <button
+                <div
                   key={i}
-                  onClick={() => toggleDone(i)}
-                  className={`w-full flex items-center justify-between text-xs px-2 py-1.5 rounded-lg ${
-                    done[i] ? "bg-sky-900/40 text-sky-300 line-through" : "bg-neutral-800/60 text-neutral-300"
+                  className={`w-full flex items-center justify-between gap-2 text-xs px-2 py-1.5 rounded-lg ${
+                    done[i] ? "bg-sky-900/40 text-sky-300" : "bg-neutral-800/60 text-neutral-300"
                   }`}
                 >
-                  <span className="flex items-center gap-1.5">
+                  <button onClick={() => toggleDone(i)} className={`flex items-center gap-1.5 text-left flex-1 ${done[i] ? "line-through" : ""}`}>
                     <span className={`w-3.5 h-3.5 rounded border ${done[i] ? "bg-sky-500 border-sky-500" : "border-neutral-600"} flex items-center justify-center shrink-0`}>
                       {done[i] && <Check size={10} className="text-neutral-950" />}
                     </span>
                     {step.reps} rep{step.reps > 1 ? "s" : ""} @ {step.pct}%{step.optional ? " (optional)" : ""}
-                  </span>
-                  <span className="font-medium">{w !== null ? w : "-"}</span>
-                </button>
+                  </button>
+                  <NumInput
+                    value={shown}
+                    onChange={(v) => setStepWeight(i, v)}
+                    placeholder={planned || "-"}
+                    className="w-16 bg-neutral-800 rounded-lg px-2 py-1 text-xs border border-neutral-700 text-right font-medium"
+                  />
+                </div>
               );
             })}
           </div>
@@ -2292,6 +2378,7 @@ const buildChartData = (history) => {
   history.forEach((l) => {
     if (!byDate[l.date]) byDate[l.date] = { date: l.date, straight: null, ds: null };
     l.sets.forEach((s) => {
+      if (s.kind === "F" || s.kind === "W") return;
       repValues(s).forEach((w) => {
         const key = s.kind === "DS" ? "ds" : "straight";
         if (byDate[l.date][key] === null || w > byDate[l.date][key]) byDate[l.date][key] = w;
@@ -2639,7 +2726,7 @@ function DataSyncSection({ exercises, programs, logs, setExercises, setPrograms,
         Export to Excel
       </button>
       {status && <p className="text-xs text-teal-400">{status}</p>}
-      <p className="text-[11px] text-neutral-600 text-center pt-1">Iron Ledger version 45 (Oct 11, 2026)</p>
+      <p className="text-[11px] text-neutral-600 text-center pt-1">Iron Ledger version 48 (Oct 11, 2026)</p>
     </div>
   );
 }
