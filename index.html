@@ -114,6 +114,47 @@ const ENTRY_STATUS_STYLES = {
   done: { border: "border-l-emerald-500", badgeTone: "green", label: "Done" },
 };
 
+// Keeps only digits (and one decimal point), turns a comma into a point,
+// and removes zeros at the front ("025" becomes "25", "0.5" stays "0.5").
+const cleanNumber = (raw, allowDecimal = true) => {
+  let v = String(raw === undefined || raw === null ? "" : raw)
+    .replace(/,/g, ".")
+    .replace(allowDecimal ? /[^0-9.]/g : /[^0-9]/g, "");
+  if (allowDecimal) {
+    const firstDot = v.indexOf(".");
+    if (firstDot !== -1) v = v.slice(0, firstDot + 1) + v.slice(firstDot + 1).replace(/\./g, "");
+    if (v.startsWith(".")) v = "0" + v;
+  }
+  return v.replace(/^0+(?=\d)/, "");
+};
+
+// Number field: when you tap into it, the cursor goes to the end of the
+// number, so the delete key removes the last digit right away.
+function NumInput({ value, onChange, allowDecimal = true, ...rest }) {
+  const handleFocus = (ev) => {
+    const el = ev.target;
+    const toEnd = () => {
+      try {
+        const n = el.value.length;
+        el.setSelectionRange(n, n);
+      } catch (err) {}
+    };
+    setTimeout(toEnd, 0);
+    setTimeout(toEnd, 60);
+  };
+  return (
+    <input
+      type="text"
+      inputMode={allowDecimal ? "decimal" : "numeric"}
+      autoComplete="off"
+      value={value === undefined || value === null ? "" : value}
+      onChange={(ev) => onChange(cleanNumber(ev.target.value, allowDecimal))}
+      onFocus={handleFocus}
+      {...rest}
+    />
+  );
+}
+
 async function storageGet(key) {
   try {
     const v = localStorage.getItem(key);
@@ -794,9 +835,15 @@ function TodayView({ exercises, setExercises, programs, draft, setDraft, logs, s
   const toggleCollapsed = (key) => setOpenKeys((prev) => ({ ...prev, [key]: !prev[key] }));
   const cardRefs = useRef({});
 
-  const jumpTo = (key) => {
-    cardRefs.current[key]?.scrollIntoView({ behavior: "smooth", block: "center" });
+  const jumpTo = (key, block = "center") => {
+    cardRefs.current[key]?.scrollIntoView({ behavior: "smooth", block });
   };
+  const [focusKey, setFocusKey] = useState(null);
+  useEffect(() => {
+    if (!focusKey) return;
+    const t = setTimeout(() => { jumpTo(focusKey, "start"); setFocusKey(null); }, 120);
+    return () => clearTimeout(t);
+  }, [focusKey]);
 
   const clearNextFlag = (exerciseId) => {
     setExercises(exercises.map((e) => (e.id === exerciseId ? { ...e, nextTimeNote: "" } : e)));
@@ -897,12 +944,16 @@ function TodayView({ exercises, setExercises, programs, draft, setDraft, logs, s
   };
 
   const addAdHocExercise = (exerciseId) => {
+    const key = uid("en");
+    const newEntry = { key, exerciseId, plannedExerciseId: null, programId: null, sets: presetSets(exerciseId) };
+    setOpenKeys((prev) => ({ ...prev, [key]: true }));
+    setFocusKey(key);
     if (!draft) {
-      setDraft({ date: todayStr(), programIds: [], entries: [{ key: uid("en"), exerciseId, plannedExerciseId: null, programId: null, sets: presetSets(exerciseId) }] });
+      setDraft({ date: todayStr(), programIds: [], entries: [newEntry] });
       setPickerOpen(false);
       return;
     }
-    setDraft({ ...draft, entries: [...draft.entries, { key: uid("en"), exerciseId, plannedExerciseId: null, programId: null, sets: presetSets(exerciseId) }] });
+    setDraft({ ...draft, entries: [...draft.entries, newEntry] });
   };
 
   const doSwap = (key, newExerciseId) => {
@@ -1029,7 +1080,11 @@ function TodayView({ exercises, setExercises, programs, draft, setDraft, logs, s
         const stats = getStats(entry.exerciseId);
         const status = getEntryStatus(entry);
         const statusStyle = ENTRY_STATUS_STYLES[status];
-        const toggleDone = () => updateEntry(entry.key, (e) => ({ ...e, done: !e.done }));
+        const toggleDone = () => {
+          const markingDone = !entry.done;
+          updateEntry(entry.key, (e) => ({ ...e, done: !e.done }));
+          if (markingDone) setOpenKeys((prev) => ({ ...prev, [entry.key]: false }));
+        };
         return (
           <div
             key={entry.key}
@@ -1089,6 +1144,9 @@ function TodayView({ exercises, setExercises, programs, draft, setDraft, logs, s
               </div>
             </div>
 
+            {ex.setup && !openKeys[entry.key] && (
+              <div className="text-xs text-sky-300 bg-sky-950/40 border border-sky-900 rounded-lg px-2.5 py-1">Setup: {ex.setup}</div>
+            )}
             <div className="flex gap-2 flex-wrap">
               {stats.prStraight !== null && <Badge tone="amber">PR {stats.prStraight}</Badge>}
               {stats.prDS !== null && <Badge tone="amber">PR DS {stats.prDS}</Badge>}
@@ -1114,40 +1172,33 @@ function TodayView({ exercises, setExercises, programs, draft, setDraft, logs, s
                     <span className="text-xs text-neutral-500 w-4 shrink-0">{i + 1}</span>
                     {s.split ? (
                       <div className="flex gap-1">
-                        <input
-                          type="number"
-                          inputMode="decimal"
+                        <NumInput
                           placeholder="L"
                           value={s.left}
-                          onChange={(ev) => updateSet(entry.key, i, "left", ev.target.value)}
+                          onChange={(v) => updateSet(entry.key, i, "left", v)}
                           className={`w-16 rounded-lg px-2 py-1.5 text-sm border ${s.confirmed ? "bg-teal-950/40 border-teal-800 text-teal-100" : "bg-neutral-800 border-neutral-700"}`}
                         />
-                        <input
-                          type="number"
-                          inputMode="decimal"
+                        <NumInput
                           placeholder="R"
                           value={s.right}
-                          onChange={(ev) => updateSet(entry.key, i, "right", ev.target.value)}
+                          onChange={(v) => updateSet(entry.key, i, "right", v)}
                           className={`w-16 rounded-lg px-2 py-1.5 text-sm border ${s.confirmed ? "bg-teal-950/40 border-teal-800 text-teal-100" : "bg-neutral-800 border-neutral-700"}`}
                         />
                       </div>
                     ) : (
-                      <input
-                        type="number"
-                        inputMode="decimal"
+                      <NumInput
                         placeholder="Weight"
                         value={s.weight}
-                        onChange={(ev) => updateSet(entry.key, i, "weight", ev.target.value)}
+                        onChange={(v) => updateSet(entry.key, i, "weight", v)}
                         maxLength={7}
                         className={`w-20 rounded-lg px-2 py-1.5 text-sm border ${s.confirmed ? "bg-teal-950/40 border-teal-800 text-teal-100" : "bg-neutral-800 border-neutral-700"}`}
                       />
                     )}
-                    <input
-                      type="number"
-                      inputMode="numeric"
+                    <NumInput
+                      allowDecimal={false}
                       placeholder="Reps"
                       value={s.reps}
-                      onChange={(ev) => updateSet(entry.key, i, "reps", ev.target.value)}
+                      onChange={(v) => updateSet(entry.key, i, "reps", v)}
                       className={`w-14 rounded-lg px-1.5 py-1.5 text-sm border text-center ${s.confirmed ? "bg-teal-950/40 border-teal-800 text-teal-100" : "bg-neutral-800 border-neutral-700"}`}
                     />
                   </div>
@@ -1201,6 +1252,14 @@ function TodayView({ exercises, setExercises, programs, draft, setDraft, logs, s
                 </button>
               )}
             </div>
+
+            <input
+              type="text"
+              value={ex.setup || ""}
+              onChange={(ev) => setExercises(exercises.map((x) => (x.id === ex.id ? { ...x, setup: ev.target.value } : x)))}
+              placeholder="Machine setup (pin hole #, seat, handle...) - saved for next time"
+              className="w-full bg-sky-950/30 rounded-lg px-2.5 py-1.5 text-xs border border-sky-900 text-sky-200 placeholder-sky-700"
+            />
 
             <textarea
               value={entry.note || ""}
@@ -1847,6 +1906,31 @@ function ExerciseDetailView({ exercise, exercises, setExercises, history, getSta
         <div className="text-xs text-neutral-500 bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2">Note: {exercise.refNote}</div>
       )}
 
+      <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-3 space-y-1.5">
+        <div className="text-xs text-neutral-500">Machine setup (pin hole #, seat, handle...)</div>
+        <input
+          type="text"
+          value={exercise.setup || ""}
+          onChange={(e) => setExercises(exercises.map((x) => (x.id === exercise.id ? { ...x, setup: e.target.value } : x)))}
+          placeholder="Example: Pin hole 7, seat 4"
+          className="w-full bg-neutral-800 rounded-lg px-2.5 py-1.5 text-sm border border-neutral-700"
+        />
+      </div>
+
+      {history.some((l) => l.note && l.note.trim()) && (
+        <details className="bg-neutral-900 border border-neutral-800 rounded-xl p-3">
+          <summary className="text-sm text-amber-500 cursor-pointer">All comments ({history.filter((l) => l.note && l.note.trim()).length})</summary>
+          <div className="mt-2 space-y-2">
+            {history.filter((l) => l.note && l.note.trim()).map((l) => (
+              <div key={l.id} className="text-xs border-l-2 border-neutral-700 pl-2">
+                <div className="text-neutral-500">{formatDate(l.date)}</div>
+                <div className="text-neutral-300">{l.note}</div>
+              </div>
+            ))}
+          </div>
+        </details>
+      )}
+
       <NextTimeReminder exercise={exercise} exercises={exercises} setExercises={setExercises} />
 
       <SupersetSection exercise={exercise} exercises={exercises} setExercises={setExercises} />
@@ -1859,14 +1943,14 @@ function ExerciseDetailView({ exercise, exercises, setExercises, history, getSta
           <div className="flex items-center gap-2">
             {qSplit ? (
               <div className="flex-1 flex gap-1">
-                <input type="number" inputMode="decimal" value={qLeft} onChange={(e) => setQLeft(e.target.value)} placeholder="L" className="w-16 bg-neutral-800 rounded-lg px-2.5 py-2 text-sm border border-neutral-700" />
-                <input type="number" inputMode="decimal" value={qRight} onChange={(e) => setQRight(e.target.value)} placeholder="R" className="w-16 bg-neutral-800 rounded-lg px-2.5 py-2 text-sm border border-neutral-700" />
+                <NumInput value={qLeft} onChange={(v) => setQLeft(v)} placeholder="L" className="w-16 bg-neutral-800 rounded-lg px-2.5 py-2 text-sm border border-neutral-700" />
+                <NumInput value={qRight} onChange={(v) => setQRight(v)} placeholder="R" className="w-16 bg-neutral-800 rounded-lg px-2.5 py-2 text-sm border border-neutral-700" />
               </div>
             ) : (
-              <input type="number" inputMode="decimal" value={qWeight} onChange={(e) => setQWeight(e.target.value)} placeholder="Weight" className="w-20 bg-neutral-800 rounded-lg px-2.5 py-2 text-sm border border-neutral-700" />
+              <NumInput value={qWeight} onChange={(v) => setQWeight(v)} placeholder="Weight" className="w-20 bg-neutral-800 rounded-lg px-2.5 py-2 text-sm border border-neutral-700" />
             )}
             {!qSplit && (
-              <input type="number" inputMode="numeric" value={qReps} onChange={(e) => setQReps(e.target.value)} placeholder="Reps" className="w-14 bg-neutral-800 rounded-lg px-1.5 py-2 text-sm border border-neutral-700 text-center" />
+              <NumInput allowDecimal={false} value={qReps} onChange={(v) => setQReps(v)} placeholder="Reps" className="w-14 bg-neutral-800 rounded-lg px-1.5 py-2 text-sm border border-neutral-700 text-center" />
             )}
             <button
               onClick={() => {
@@ -2146,11 +2230,9 @@ function WarmupBlock({ ex, entry, stats, updateEntry }) {
         <>
           <div className="flex items-center gap-2">
             <span className="text-xs text-neutral-400">Today's target</span>
-            <input
-              type="number"
-              inputMode="decimal"
+            <NumInput
               value={entry.warmupTarget !== undefined ? entry.warmupTarget : defaultTarget}
-              onChange={(e) => setTarget(e.target.value)}
+              onChange={(v) => setTarget(v)}
               className="w-20 bg-neutral-800 rounded-lg px-2 py-1 text-sm border border-neutral-700"
             />
           </div>
@@ -2448,6 +2530,7 @@ function DataSyncSection({ exercises, programs, logs, setExercises, setPrograms,
         "Default Sets": e.defaultSets || "",
         "Default Reps": e.defaultReps || "",
         "Reference Note": e.refNote || "",
+        "Machine Setup": e.setup || "",
         Archived: e.archived ? "Yes" : "No",
       }));
 
