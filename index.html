@@ -835,14 +835,17 @@ function TodayView({ exercises, setExercises, programs, draft, setDraft, logs, s
   const toggleCollapsed = (key) => setOpenKeys((prev) => ({ ...prev, [key]: !prev[key] }));
   const cardRefs = useRef({});
 
-  const jumpTo = (key, block = "center") => {
-    cardRefs.current[key]?.scrollIntoView({ behavior: "smooth", block });
+  const jumpTo = (key, block = "center", behavior = "smooth") => {
+    cardRefs.current[key]?.scrollIntoView({ behavior, block });
   };
   const [focusKey, setFocusKey] = useState(null);
   useEffect(() => {
     if (!focusKey) return;
-    const t = setTimeout(() => { jumpTo(focusKey, "start"); setFocusKey(null); }, 120);
-    return () => clearTimeout(t);
+    // The keyboard and the picker close at the same time, so scroll several
+    // times (instant, no animation) until the layout has settled.
+    const timers = [80, 300, 700, 1200].map((ms) => setTimeout(() => jumpTo(focusKey, "start", "auto"), ms));
+    const clear = setTimeout(() => setFocusKey(null), 1300);
+    return () => { timers.forEach(clearTimeout); clearTimeout(clear); };
   }, [focusKey]);
 
   const clearNextFlag = (exerciseId) => {
@@ -1089,6 +1092,7 @@ function TodayView({ exercises, setExercises, programs, draft, setDraft, logs, s
           <div
             key={entry.key}
             ref={(el) => (cardRefs.current[entry.key] = el)}
+            style={{ scrollMarginTop: 12 }}
             className={`bg-neutral-900 border border-neutral-800 border-l-4 rounded-xl p-3 space-y-2 ${statusStyle.border}`}
           >
             {ex.nextTimeNote && (
