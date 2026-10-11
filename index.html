@@ -501,7 +501,8 @@ function App() {
         }
         ex = ex.map((e) => {
           const patch = SEED_PATCHES[e.id];
-          const nameOk = !patch || patch.oldName === undefined || (Array.isArray(patch.oldName) ? patch.oldName.includes(e.name) : e.name === patch.oldName);
+          const norm = (s) => String(s || "").trim().toLowerCase();
+          const nameOk = !patch || patch.oldName === undefined || (Array.isArray(patch.oldName) ? patch.oldName.some((n) => norm(n) === norm(e.name)) : norm(e.name) === norm(patch.oldName));
           const refOk = !patch || patch.oldRefNote === undefined || e.refNote === patch.oldRefNote;
           const machineOk = !patch || patch.oldMachine === undefined || e.machine === patch.oldMachine;
           if (patch && nameOk && refOk && machineOk) {
