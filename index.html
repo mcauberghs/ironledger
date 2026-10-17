@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Iron Ledger version 49 (2026-10-17) -->
+<!-- Iron Ledger version 52 (2026-10-17) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -67,10 +67,11 @@ const SEED_PROGRAMS = [{"id": "p1", "name": "AX BACK 1", "exerciseIds": ["e43", 
 
 const EXTRA_EXERCISES = [
   { id: "emx1sleddrag", name: "Backward Sled Drag", machine: "Sled", muscleGroup: "Legs", defaultSets: "4", defaultReps: "20 yards", refNote: "Light. Walk backward, torso upright, short steps. Warm-up or knee-friendly quad work", seedPR: null, archived: false, alternateIds: [] },
+  { id: "emx3standcurl", name: "Standing Cable Leg Curl (One Leg)", machine: "Cable", muscleGroup: "Legs", defaultSets: "2", defaultReps: "10-12 per leg", refNote: "Ankle strap on a low cable. Hold the machine for balance, hips square, curl the heel toward your butt slowly. Start light", seedPR: null, archived: false, alternateIds: ["e5"] },
   { id: "emx2tibraise", name: "Tibialis Raise", machine: "Band / Wall", muscleGroup: "Legs", defaultSets: "2", defaultReps: "20", refNote: "Back against a wall, lift the toes up. Light band for more resistance", seedPR: null, archived: false, alternateIds: [] },
 ];
 const EXTRA_PROGRAMS = [
-  { id: "pgx1piriformis", name: "Piriformis Friendly", exerciseIds: ["emx1sleddrag", "e30", "e11", "e36", "e5", "e13", "e19", "emx2tibraise", "e28"], archived: false },
+  { id: "pgx1piriformis", name: "Piriformis Friendly", exerciseIds: ["emx1sleddrag", "e30", "e11", "e36", "e5", "emx3standcurl", "e13", "e19", "emx2tibraise", "e28"], archived: false },
 ];
 
 const todayStr = () => {
@@ -263,6 +264,7 @@ function App() {
       let lg = await storageGet("ironledger:logs");
       let dr = await storageGet("ironledger:draft");
       const SEED_PATCHES = {
+        e36: { oldSetup: "", setup: "High: line 7. Low: line 10 (feet low)" },
         emuk275kwgn0r5: { oldName: "Judd Lienhard Double Pull", name: "Rotational Row (Judd Lienhard)" },
         e51: { oldName: "Barbell Row (B)-ChestSupported DB Row (DB) - Landmine Row (L) - GO HEAVY", name: "Barbell Row", machine: "Free Weights", refNote: "Baseline 185", alternateIds: ["alt1", "alt2"] },
         e70: { oldName: "Pull ups (P) | Chin ups (C)", name: "Pull ups", alternateIds: ["alt3"] },
@@ -371,6 +373,13 @@ function App() {
         p6: { oldIds: ["e74", "e75", "e76", "e77"], newIds: ["e74", "e75", "e76", "alt7", "e77"] },
         p9: { oldIds: ["e47", "e48", "e49"], newIds: ["e47", "e48", "e49", "alt9"] },
         p2: { oldIds: ["e50", "e51", "e52", "e53", "e54", "e55"], newIds: ["e50", "e93", "e52", "e53", "e54", "e55"] },
+        pgx1piriformis: {
+          oldIdsList: [
+            ["emx1sleddrag", "e30", "e11", "e36", "e5", "e13", "e19", "emx2tibraise", "e28"],
+            ["emx1sleddrag", "e30", "e11", "e36", "e5", "e15", "e13", "e19", "emx2tibraise", "e28"],
+          ],
+          newIds: ["emx1sleddrag", "e30", "e11", "e36", "e5", "emx3standcurl", "e13", "e19", "emx2tibraise", "e28"],
+        },
       };
       const ENSURE_LINKS = [
         ["emuk275kwgn0r5", "alt2"],
@@ -562,9 +571,10 @@ function App() {
           const nameOk = !patch || patch.oldName === undefined || (Array.isArray(patch.oldName) ? patch.oldName.some((n) => norm(n) === norm(e.name)) : norm(e.name) === norm(patch.oldName));
           const refOk = !patch || patch.oldRefNote === undefined || e.refNote === patch.oldRefNote;
           const machineOk = !patch || patch.oldMachine === undefined || e.machine === patch.oldMachine;
-          if (patch && nameOk && refOk && machineOk) {
+          const setupOk = !patch || patch.oldSetup === undefined || (e.setup || "") === patch.oldSetup;
+          if (patch && nameOk && refOk && machineOk && setupOk) {
             changed = true;
-            const { oldName, oldRefNote, oldMachine, ...fields } = patch;
+            const { oldName, oldRefNote, oldMachine, oldSetup, ...fields } = patch;
             return { ...e, ...fields };
           }
           return e;
@@ -629,7 +639,7 @@ function App() {
         }
         pr = pr.map((p) => {
           const patch = PROGRAM_PATCHES[p.id];
-          if (patch && JSON.stringify(p.exerciseIds) === JSON.stringify(patch.oldIds)) {
+          if (patch && (patch.oldIdsList || [patch.oldIds]).some((o) => JSON.stringify(p.exerciseIds) === JSON.stringify(o))) {
             prChanged = true;
             return { ...p, exerciseIds: patch.newIds };
           }
@@ -2734,7 +2744,7 @@ function DataSyncSection({ exercises, programs, logs, setExercises, setPrograms,
         Export to Excel
       </button>
       {status && <p className="text-xs text-teal-400">{status}</p>}
-      <p className="text-[11px] text-neutral-600 text-center pt-1">Iron Ledger version 49 (Oct 17, 2026)</p>
+      <p className="text-[11px] text-neutral-600 text-center pt-1">Iron Ledger version 52 (Oct 17, 2026)</p>
     </div>
   );
 }
