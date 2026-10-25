@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Iron Ledger version 52 (2026-10-17) -->
+<!-- Iron Ledger version 53 (2026-10-25) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -264,7 +264,6 @@ function App() {
       let lg = await storageGet("ironledger:logs");
       let dr = await storageGet("ironledger:draft");
       const SEED_PATCHES = {
-        e36: { oldSetup: "", setup: "High: line 7. Low: line 10 (feet low)" },
         emuk275kwgn0r5: { oldName: "Judd Lienhard Double Pull", name: "Rotational Row (Judd Lienhard)" },
         e51: { oldName: "Barbell Row (B)-ChestSupported DB Row (DB) - Landmine Row (L) - GO HEAVY", name: "Barbell Row", machine: "Free Weights", refNote: "Baseline 185", alternateIds: ["alt1", "alt2"] },
         e70: { oldName: "Pull ups (P) | Chin ups (C)", name: "Pull ups", alternateIds: ["alt3"] },
@@ -540,6 +539,7 @@ function App() {
       const FIELD_DEFAULTS = {
         e2: { warmupScheme: WARMUP_SCHEME_DEFAULT, warmupBase: 468 },
         e8: { warmupScheme: WARMUP_SCHEME_DEFAULT, warmupBase: 421 },
+        e36: { setup: "High: line 7. Low: line 10 (feet low)" },
       };
       const PR_CORRECTIONS = {
         e2: {
@@ -2744,7 +2744,7 @@ function DataSyncSection({ exercises, programs, logs, setExercises, setPrograms,
         Export to Excel
       </button>
       {status && <p className="text-xs text-teal-400">{status}</p>}
-      <p className="text-[11px] text-neutral-600 text-center pt-1">Iron Ledger version 52 (Oct 17, 2026)</p>
+      <p className="text-[11px] text-neutral-600 text-center pt-1">Iron Ledger version 53 (Oct 25, 2026)</p>
     </div>
   );
 }
