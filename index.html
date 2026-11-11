@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Iron Ledger version 54 (2026-11-11) -->
+<!-- Iron Ledger version 56 (2026-11-11) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -881,6 +881,13 @@ function TodayView({ exercises, setExercises, programs, draft, setDraft, logs, s
   const [selectedPrograms, setSelectedPrograms] = useState([]);
   const [swapTarget, setSwapTarget] = useState(null);
   const [confirmDiscard, setConfirmDiscard] = useState(false);
+  // Exercises where today's sets suggest a max above the Baseline.
+  const [raiseQueue, setRaiseQueue] = useState([]);
+  const [raiseValue, setRaiseValue] = useState(null);
+  const nextRaise = () => {
+    setRaiseValue(null);
+    setRaiseQueue((q) => q.slice(1));
+  };
   const [openKeys, setOpenKeys] = useState({});
   const toggleCollapsed = (key) => setOpenKeys((prev) => ({ ...prev, [key]: !prev[key] }));
   const cardRefs = useRef({});
@@ -1021,8 +1028,24 @@ function TodayView({ exercises, setExercises, programs, draft, setDraft, logs, s
 
   const finishSession = () => {
     const newLogs = [];
+    const raises = [];
     draft.entries.forEach((e) => {
       const validSets = e.sets.filter((s) => (s.split ? s.left !== "" || s.right !== "" : s.weight !== "" && s.weight !== null));
+      const exInfo = exerciseById[e.exerciseId];
+      const baseNow = exInfo && exInfo.warmupScheme ? parseFloat(exInfo.warmupBase) : NaN;
+      if (!isNaN(baseNow) && baseNow > 0 && !raises.some((r) => r.exerciseId === e.exerciseId)) {
+        let best = null;
+        validSets.forEach((s) => {
+          if (s.split || (s.kind && s.kind !== "straight")) return;
+          const w = parseFloat(s.weight);
+          const r = parseInt(s.reps, 10);
+          if (isNaN(w) || w <= 0 || r > 12) return;
+          // Estimated max (Epley): weight x (1 + reps / 30). One rep or no reps = the weight itself.
+          const est = Math.floor((isNaN(r) || r <= 1 ? w : w * (1 + r / 30)) / 5) * 5;
+          if (!best || est > best.est) best = { est, w, r: isNaN(r) ? "" : r };
+        });
+        if (best && best.est > baseNow) raises.push({ exerciseId: e.exerciseId, name: exInfo.name, base: baseNow, ...best });
+      }
       const hasNote = e.note && e.note.trim() !== "";
       const warmSets = computeWarmups(exerciseById[e.exerciseId], e, getStats(e.exerciseId))
         .filter((w) => w.done && w.shown !== "" && !isNaN(parseFloat(w.shown)))
@@ -1047,6 +1070,8 @@ function TodayView({ exercises, setExercises, programs, draft, setDraft, logs, s
       });
     });
     setLogs([...logs, ...newLogs]);
+    setRaiseValue(null);
+    setRaiseQueue(raises);
     setDraft(null);
     setPickerOpen(true);
     setSelectedPrograms([]);
@@ -1059,9 +1084,54 @@ function TodayView({ exercises, setExercises, programs, draft, setDraft, logs, s
     setConfirmDiscard(false);
   };
 
+  const raiseItem = raiseQueue[0];
+  const raiseModal = raiseItem ? (
+    <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
+      <div className="w-full max-w-sm bg-neutral-900 border border-neutral-700 rounded-xl p-4 space-y-3">
+        <div className="text-sm font-medium">{raiseItem.name}</div>
+        <div className="text-xs text-neutral-400">
+          Your best set today ({raiseItem.w}{raiseItem.r !== "" ? ` x ${raiseItem.r}` : ""}) suggests a max of about{" "}
+          <span className="text-neutral-100 font-medium">{raiseItem.est}</span>. Your Baseline is{" "}
+          <span className="text-neutral-100 font-medium">{raiseItem.base}</span>.
+        </div>
+        {raiseValue === null ? (
+          <>
+            <div className="text-sm">Would you like to increase the Baseline?</div>
+            <div className="flex gap-2">
+              <button onClick={() => setRaiseValue(String(raiseItem.est))} className="flex-1 py-2 rounded-lg bg-sky-600 text-white text-sm font-medium">Yes</button>
+              <button onClick={nextRaise} className="flex-1 py-2 rounded-lg border border-neutral-700 text-neutral-300 text-sm">No</button>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-neutral-400">New Baseline</span>
+              <NumInput value={raiseValue} onChange={setRaiseValue} className="w-24 bg-neutral-800 rounded-lg px-2 py-1.5 text-sm border border-neutral-700" />
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  const n = parseFloat(raiseValue);
+                  if (isNaN(n) || n <= 0) return;
+                  setExercises(applyBaseline(exercises, raiseItem.exerciseId, n, "Raised after session"));
+                  nextRaise();
+                }}
+                className="flex-1 py-2 rounded-lg bg-sky-600 text-white text-sm font-medium"
+              >
+                Save
+              </button>
+              <button onClick={nextRaise} className="flex-1 py-2 rounded-lg border border-neutral-700 text-neutral-300 text-sm">Cancel</button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  ) : null;
+
   if (pickerOpen || !draft) {
     return (
       <div className="px-4 py-4 space-y-4">
+        {raiseModal}
         <p className="text-sm text-neutral-400">Pick one or more workouts for today. You can add extra exercises once you're in.</p>
         <div className="space-y-2">
           {activePrograms.map((p) => {
@@ -1262,6 +1332,9 @@ function TodayView({ exercises, setExercises, programs, draft, setDraft, logs, s
                       onChange={(v) => updateSet(entry.key, i, "reps", v)}
                       className={`w-14 rounded-lg px-1.5 py-1.5 text-sm border text-center ${s.confirmed ? "bg-teal-950/40 border-teal-800 text-teal-100" : "bg-neutral-800 border-neutral-700"}`}
                     />
+                    {!s.split && isBarbellExercise(ex) && plateText(s.weight) !== "" && (
+                      <span className="text-[10px] text-neutral-400 leading-tight">({plateText(s.weight)})</span>
+                    )}
                   </div>
                   <div className="flex items-center gap-1.5 mt-1 pl-6">
                     <button
@@ -2017,17 +2090,10 @@ function ExerciseDetailView({ exercise, exercises, setExercises, history, getSta
             {exercise.warmupScheme ? "On" : "Off"}
           </button>
         </div>
-        {exercise.warmupScheme && (
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-neutral-400">100% weight (used until you have a PR)</span>
-            <NumInput
-              value={exercise.warmupBase === undefined || exercise.warmupBase === null ? "" : String(exercise.warmupBase)}
-              onChange={(v) => setExercises(exercises.map((x) => (x.id === exercise.id ? { ...x, warmupBase: v === "" ? "" : parseFloat(v) || v } : x)))}
-              className="w-20 bg-neutral-800 rounded-lg px-2 py-1 text-sm border border-neutral-700"
-            />
-          </div>
-        )}
+        {exercise.warmupScheme && <BaselineEditor exercise={exercise} exercises={exercises} setExercises={setExercises} />}
       </div>
+
+      <PlateOptions exercise={exercise} exercises={exercises} setExercises={setExercises} />
 
       <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-3 space-y-1.5">
         <div className="text-xs text-neutral-500">Machine setup (pin hole #, seat, handle...)</div>
@@ -2334,10 +2400,213 @@ function AlternatesSection({ exercise, exercises, setExercises }) {
   );
 }
 
+// ---- Plate breakdown for BB exercises ----
+// The bar is 45 lbs. Plates go on in pairs (same on each side): 45, 35, 25, 10, 5, 2.5,
+// and 1 lb when the "1 lb plates" option is on.
+const BAR_WEIGHT = 45;
+const PLATE_SIZES = [45, 35, 25, 10, 5, 2.5];
+const hasOnePlates = () => {
+  try {
+    return localStorage.getItem("ironledger:onePlates") === "1";
+  } catch (e) {
+    return false;
+  }
+};
+const isBarbellExercise = (ex) => {
+  if (!ex) return false;
+  if (ex.plateMath === true || ex.plateMath === false) return ex.plateMath;
+  return ex.id === "e2" || /\bBB\b/.test(`${ex.name || ""} ${ex.machine || ""}`);
+};
+// Splits one side of the bar into plates. Returns null when it cannot be loaded exactly.
+const platesForSide = (side, withOnes) => {
+  const greedy = (amount) => {
+    const out = [];
+    let left = amount;
+    PLATE_SIZES.forEach((p) => {
+      const n = Math.floor((left + 1e-9) / p);
+      if (n > 0) {
+        out.push([p, n]);
+        left -= n * p;
+      }
+    });
+    return Math.abs(left) < 1e-6 ? out : null;
+  };
+  const exact = greedy(side);
+  if (exact || !withOnes) return exact;
+  for (let ones = 1; ones <= 4 && ones <= side; ones++) {
+    const rest = greedy(side - ones);
+    if (rest) return [...rest, [1, ones]];
+  }
+  return null;
+};
+// "BB+45x8+5x2" for a total weight. If the weight cannot be loaded, gives the closest lower weight.
+const plateText = (total, withOnes = hasOnePlates()) => {
+  const w = parseFloat(total);
+  if (isNaN(w) || w < BAR_WEIGHT) return "";
+  const fmt = (plates) => "BB" + plates.map(([p, n]) => `+${p}x${n * 2}`).join("");
+  const exact = platesForSide((w - BAR_WEIGHT) / 2, withOnes);
+  if (exact) return fmt(exact);
+  const step = withOnes ? 1 : 5;
+  for (let t = Math.floor(w / step) * step; t >= BAR_WEIGHT; t -= step) {
+    const pl = platesForSide((t - BAR_WEIGHT) / 2, withOnes);
+    if (pl) return `closest ${t}: ${fmt(pl)}`;
+  }
+  return "";
+};
+
+// Baseline = your healthy 100% weight. It is never changed by a light day.
+// If no Baseline is set, the best logged straight set is used instead.
+const baseOf = (ex, stats) => {
+  const b = parseFloat(ex && ex.warmupBase);
+  if (!isNaN(b) && b > 0) return b;
+  const p = stats ? stats.prStraight : null;
+  return p !== null && p !== undefined ? p : NaN;
+};
+const INTENSITY_CHOICES = [100, 90, 80, 70, 60];
+const pctOf = (entry) => {
+  const p = parseFloat(entry.intensityPct);
+  return isNaN(p) || p <= 0 ? 100 : p;
+};
+// Today's 100% = Baseline x Today %.
+const todayTargetOf = (ex, entry, stats) => {
+  const base = baseOf(ex, stats);
+  return isNaN(base) ? NaN : (base * pctOf(entry)) / 100;
+};
+// Returns a new exercise list with the Baseline changed and the change saved in the history.
+const applyBaseline = (exercises, exerciseId, newValue, reason) =>
+  exercises.map((x) => {
+    if (x.id !== exerciseId) return x;
+    const from = x.warmupBase === undefined || x.warmupBase === null ? "" : x.warmupBase;
+    if (String(from) === String(newValue)) return x;
+    const entry = { date: todayStr(), from, to: newValue, reason: reason || "" };
+    return { ...x, warmupBase: newValue, baseHistory: [...(x.baseHistory || []), entry] };
+  });
+
+function PlateOptions({ exercise, exercises, setExercises }) {
+  const [ones, setOnes] = useState(hasOnePlates());
+  const on = isBarbellExercise(exercise);
+  const toggleOnes = () => {
+    const next = !ones;
+    try {
+      localStorage.setItem("ironledger:onePlates", next ? "1" : "0");
+    } catch (e) {}
+    setOnes(next);
+  };
+  return (
+    <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-3 space-y-1.5">
+      <div className="flex items-center justify-between">
+        <div className="text-xs text-neutral-500">Plate breakdown (45 lb bar, plates in pairs)</div>
+        <button
+          onClick={() => setExercises(exercises.map((x) => (x.id === exercise.id ? { ...x, plateMath: !on } : x)))}
+          className={`text-xs px-2.5 py-1 rounded-lg border ${on ? "border-sky-500 text-sky-400" : "border-neutral-700 text-neutral-400"}`}
+        >
+          {on ? "On" : "Off"}
+        </button>
+      </div>
+      {on && (
+        <>
+          <div className="text-[11px] text-neutral-500">
+            Example: 315 = {plateText(315, ones)}. 417 = {plateText(417, ones)}.
+          </div>
+          <button onClick={toggleOnes} className="flex items-center gap-2 text-xs text-neutral-300">
+            <span className={`w-3.5 h-3.5 rounded border ${ones ? "bg-sky-500 border-sky-500" : "border-neutral-600"} flex items-center justify-center shrink-0`}>
+              {ones && <Check size={10} className="text-neutral-950" />}
+            </span>
+            I have 1 lb plates (home). This setting is for all exercises.
+          </button>
+        </>
+      )}
+    </div>
+  );
+}
+
+function BaselineEditor({ exercise, exercises, setExercises }) {
+  const [editing, setEditing] = useState(false);
+  const [value, setValue] = useState("");
+  const [reason, setReason] = useState("");
+  const current = exercise.warmupBase === undefined || exercise.warmupBase === null || exercise.warmupBase === "" ? "" : exercise.warmupBase;
+  const history = (exercise.baseHistory || []).slice().reverse();
+  const save = () => {
+    const n = parseFloat(value);
+    if (isNaN(n) || n <= 0) return;
+    setExercises(applyBaseline(exercises, exercise.id, n, reason.trim()));
+    setEditing(false);
+    setValue("");
+    setReason("");
+  };
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between gap-2">
+        <div className="text-xs text-neutral-400">
+          Baseline (your healthy 100%): <span className="text-neutral-100 font-medium text-sm">{current === "" ? "not set" : current}</span>
+        </div>
+        {!editing && (
+          <button
+            onClick={() => {
+              setValue(current === "" ? "" : String(current));
+              setReason("");
+              setEditing(true);
+            }}
+            className="text-xs px-2.5 py-1 rounded-lg border border-neutral-700 text-neutral-300"
+          >
+            Change
+          </button>
+        )}
+      </div>
+      <div className="text-[11px] text-neutral-500">
+        For a light or rehab day, do not change the Baseline. Pick a lower "Today %" in the workout instead.
+      </div>
+      {editing && (
+        <div className="bg-neutral-800/60 rounded-lg p-2 space-y-2">
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-neutral-400">New Baseline</span>
+            <NumInput value={value} onChange={setValue} className="w-20 bg-neutral-800 rounded-lg px-2 py-1 text-sm border border-neutral-700" />
+          </div>
+          <input
+            type="text"
+            value={reason}
+            onChange={(ev) => setReason(ev.target.value)}
+            placeholder="Reason (optional)"
+            className="w-full bg-neutral-800 rounded-lg px-2 py-1.5 text-xs border border-neutral-700"
+          />
+          <div className="flex gap-2">
+            <button onClick={save} className="flex-1 text-xs py-1.5 rounded-lg bg-sky-600 text-white font-medium">Save</button>
+            <button onClick={() => setEditing(false)} className="flex-1 text-xs py-1.5 rounded-lg border border-neutral-700 text-neutral-300">Cancel</button>
+          </div>
+        </div>
+      )}
+      <details>
+        <summary className="text-xs text-neutral-400 cursor-pointer">Baseline history ({history.length})</summary>
+        {history.length === 0 ? (
+          <div className="text-xs text-neutral-500 pt-1.5">No changes yet. Every change will be listed here.</div>
+        ) : (
+          <div className="space-y-1 pt-1.5">
+            {history.map((h, i) => (
+              <div key={i} className="flex items-center justify-between gap-2 text-xs bg-neutral-800/60 rounded-lg px-2 py-1.5">
+                <div className="text-neutral-300">
+                  <span className="text-neutral-500">{formatDate(h.date)}:</span> {h.from === "" ? "not set" : h.from} → {h.to}
+                  {h.reason ? <span className="text-neutral-500"> ({h.reason})</span> : null}
+                </div>
+                {h.from !== "" && String(h.from) !== String(current) && (
+                  <button
+                    onClick={() => setExercises(applyBaseline(exercises, exercise.id, h.from, "Restored"))}
+                    className="shrink-0 text-[11px] px-2 py-0.5 rounded-lg border border-neutral-600 text-neutral-300"
+                  >
+                    Restore {h.from}
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </details>
+    </div>
+  );
+}
+
 function computeWarmups(ex, entry, stats) {
   if (!ex || !ex.warmupScheme) return [];
-  const hasT = entry.warmupTarget !== undefined && entry.warmupTarget !== "";
-  const target = parseFloat(hasT ? entry.warmupTarget : stats.prStraight ?? ex.warmupBase ?? "");
+  const target = todayTargetOf(ex, entry, stats);
   const over = entry.warmupWeights || {};
   const done = entry.warmupDone || [];
   return ex.warmupScheme.map((step, i) => {
@@ -2349,13 +2618,14 @@ function computeWarmups(ex, entry, stats) {
 
 function WarmupBlock({ ex, entry, stats, updateEntry }) {
   const [open, setOpen] = useState(true);
-  const defaultTarget = entry.warmupTarget !== undefined && entry.warmupTarget !== "" ? entry.warmupTarget : stats.prStraight ?? ex.warmupBase ?? "";
-  const target = parseFloat(entry.warmupTarget !== undefined && entry.warmupTarget !== "" ? entry.warmupTarget : defaultTarget);
+  const base = baseOf(ex, stats);
+  const pct = pctOf(entry);
+  const target = todayTargetOf(ex, entry, stats);
+  const setPct = (val) => updateEntry(entry.key, (e) => ({ ...e, intensityPct: val, warmupWeights: {} }));
   const done = entry.warmupDone || [];
 
   const wOver = entry.warmupWeights || {};
   const setStepWeight = (i, val) => updateEntry(entry.key, (e) => ({ ...e, warmupWeights: { ...(e.warmupWeights || {}), [i]: val } }));
-  const setTarget = (val) => updateEntry(entry.key, (e) => ({ ...e, warmupTarget: val }));
   const toggleDone = (i) => {
     const next = [...done];
     next[i] = !next[i];
@@ -2370,14 +2640,34 @@ function WarmupBlock({ ex, entry, stats, updateEntry }) {
       </button>
       {open && (
         <>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-neutral-400">Today's target</span>
-            <NumInput
-              value={entry.warmupTarget !== undefined ? entry.warmupTarget : defaultTarget}
-              onChange={(v) => setTarget(v)}
-              className="w-20 bg-neutral-800 rounded-lg px-2 py-1 text-sm border border-neutral-700"
-            />
+          <div className="text-xs text-neutral-400">
+            Baseline (100%): <span className="text-neutral-200 font-medium">{isNaN(base) ? "not set" : base}</span>
+            {isNaN(base) && <span className="text-neutral-500"> - set it in the exercise page (Library)</span>}
           </div>
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="text-xs text-neutral-400">Today %</span>
+            {INTENSITY_CHOICES.map((c) => (
+              <button
+                key={c}
+                onClick={() => setPct(String(c))}
+                className={`text-xs px-2 py-1 rounded-lg border ${pct === c ? "border-sky-500 text-sky-300 bg-sky-900/40" : "border-neutral-700 text-neutral-400"}`}
+              >
+                {c}
+              </button>
+            ))}
+            <NumInput
+              value={entry.intensityPct === undefined ? "100" : entry.intensityPct}
+              onChange={(v) => setPct(v)}
+              allowDecimal={false}
+              className="w-14 bg-neutral-800 rounded-lg px-2 py-1 text-xs border border-neutral-700 text-right"
+            />
+            <span className="text-xs text-neutral-500">%</span>
+          </div>
+          {!isNaN(target) && pct !== 100 && (
+            <div className="text-xs text-amber-400">
+              Today's 100% = {Math.round(target / 5) * 5} ({pct}% of {base}). The Baseline stays at {base}.
+            </div>
+          )}
           <div className="space-y-1">
             {ex.warmupScheme.map((step, i) => {
               const planned = isNaN(target) ? "" : String(Math.round((target * step.pct) / 100 / 5) * 5);
@@ -2393,7 +2683,12 @@ function WarmupBlock({ ex, entry, stats, updateEntry }) {
                     <span className={`w-3.5 h-3.5 rounded border ${done[i] ? "bg-sky-500 border-sky-500" : "border-neutral-600"} flex items-center justify-center shrink-0`}>
                       {done[i] && <Check size={10} className="text-neutral-950" />}
                     </span>
-                    {step.reps} rep{step.reps > 1 ? "s" : ""} @ {step.pct}%{step.optional ? " (optional)" : ""}
+                    <span>
+                      {step.reps} rep{step.reps > 1 ? "s" : ""} @ {step.pct}%{step.optional ? " (optional)" : ""}
+                      {isBarbellExercise(ex) && plateText(shown) !== "" && (
+                        <span className="block text-[10px] text-neutral-400 no-underline">({plateText(shown)})</span>
+                      )}
+                    </span>
                   </button>
                   <NumInput
                     value={shown}
@@ -2764,7 +3059,7 @@ function DataSyncSection({ exercises, programs, logs, setExercises, setPrograms,
         Export to Excel
       </button>
       {status && <p className="text-xs text-teal-400">{status}</p>}
-      <p className="text-[11px] text-neutral-600 text-center pt-1">Iron Ledger version 54 (Nov 11, 2026)</p>
+      <p className="text-[11px] text-neutral-600 text-center pt-1">Iron Ledger version 56 (Nov 11, 2026)</p>
     </div>
   );
 }
