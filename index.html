@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Iron Ledger version 60 (2026-11-15) -->
+<!-- Iron Ledger version 61 (2026-11-21) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -931,6 +931,7 @@ function TodayView({ exercises, setExercises, programs, draft, setDraft, logs, s
       right: s.split && s.right !== undefined ? String(s.right) : "",
       reps: s.reps || "",
       confirmed: false,
+      prefilled: true,
     }));
   };
 
@@ -985,7 +986,7 @@ function TodayView({ exercises, setExercises, programs, draft, setDraft, logs, s
     updateEntry(key, (e) => {
       const prev = e.sets[e.sets.length - 1];
       const next = prev
-        ? { weight: prev.weight, kind: prev.kind === "F" ? "straight" : prev.kind, split: prev.split, left: prev.left, right: prev.right, reps: prev.reps, confirmed: false }
+        ? { weight: prev.weight, kind: prev.kind === "F" ? "straight" : prev.kind, split: prev.split, left: prev.left, right: prev.right, reps: prev.reps, confirmed: false, prefilled: true }
         : { weight: "", kind: "straight", split: false, left: "", right: "", reps: "", confirmed: false };
       return { ...e, sets: [...e.sets, next] };
     });
@@ -1004,6 +1005,7 @@ function TodayView({ exercises, setExercises, programs, draft, setDraft, logs, s
           right: "",
           reps: work.reps === "" ? "" : String(work.reps),
           confirmed: false,
+          prefilled: true,
         })),
       ],
     }));
@@ -1011,7 +1013,7 @@ function TodayView({ exercises, setExercises, programs, draft, setDraft, logs, s
   const updateSet = (key, idx, field, value) => {
     updateEntry(key, (e) => ({
       ...e,
-      sets: e.sets.map((s, i) => (i === idx ? { ...s, [field]: value, confirmed: field === "confirmed" ? value : false } : s)),
+      sets: e.sets.map((s, i) => (i === idx ? { ...s, [field]: value, confirmed: field === "confirmed" ? value : false, prefilled: false } : s)),
     }));
   };
   const removeSet = (key, idx) => {
@@ -1039,7 +1041,7 @@ function TodayView({ exercises, setExercises, programs, draft, setDraft, logs, s
       sets: e.sets.map((s, i) => {
         if (i !== idx) return s;
         if (s.confirmed) return { ...s, confirmed: false };
-        return s.split ? { ...s, confirmed: true, weight: "" } : { ...s, confirmed: true, left: "", right: "" };
+        return s.split ? { ...s, confirmed: true, prefilled: false, weight: "" } : { ...s, confirmed: true, prefilled: false, left: "", right: "" };
       }),
     }));
   };
@@ -1312,10 +1314,15 @@ function TodayView({ exercises, setExercises, programs, draft, setDraft, logs, s
         const rowHasWeight = (s) => (s.split ? s.left !== "" || s.right !== "" : s.weight !== "" && s.weight !== null && s.weight !== undefined);
         const noWeightRows = [];
         const noRepsRows = [];
+        const untouchedRows = [];
         entry.sets.forEach((s, i) => {
           if (!rowHasWeight(s)) noWeightRows.push(i + 1);
           else if (s.reps === "" || s.reps === undefined || s.reps === null) noRepsRows.push(i + 1);
+          else if (s.prefilled && !s.confirmed) untouchedRows.push(i + 1);
         });
+        // Nothing recorded at all: no rows, or no row with a weight.
+        const nothingRecorded = !entry.sets.some(rowHasWeight);
+        const hasProblem = nothingRecorded || noWeightRows.length > 0 || noRepsRows.length > 0 || untouchedRows.length > 0;
         const closeWarn = () => setDoneWarn((prev) => ({ ...prev, [entry.key]: false }));
         const markDone = (dropEmptyRows) => {
           updateEntry(entry.key, (e) => ({ ...e, done: true, sets: dropEmptyRows ? e.sets.filter(rowHasWeight) : e.sets }));
@@ -1327,7 +1334,7 @@ function TodayView({ exercises, setExercises, programs, draft, setDraft, logs, s
             updateEntry(entry.key, (e) => ({ ...e, done: false }));
             return;
           }
-          if (noWeightRows.length > 0 || noRepsRows.length > 0) {
+          if (hasProblem) {
             // A row is not complete: keep the card open and show the warning.
             setDoneWarn((prev) => ({ ...prev, [entry.key]: true }));
             setOpenKeys((prev) => ({ ...prev, [entry.key]: true }));
@@ -1336,7 +1343,7 @@ function TodayView({ exercises, setExercises, programs, draft, setDraft, logs, s
           markDone(false);
         };
         const rowList = (rows) => (rows.length === 1 ? `Row ${rows[0]}` : `Rows ${rows.join(", ")}`);
-        const showWarn = doneWarn[entry.key] && !entry.done && (noWeightRows.length > 0 || noRepsRows.length > 0);
+        const showWarn = doneWarn[entry.key] && !entry.done && hasProblem;
         return (
           <div
             key={entry.key}
@@ -1401,14 +1408,24 @@ function TodayView({ exercises, setExercises, programs, draft, setDraft, logs, s
               <div className="bg-amber-900/30 border border-amber-600 rounded-lg p-2.5 space-y-2">
                 <div className="text-xs text-amber-200 font-medium">This exercise is not complete.</div>
                 <div className="text-xs text-amber-300 space-y-0.5">
-                  {noWeightRows.length > 0 && <div>{rowList(noWeightRows)}: no weight.</div>}
+                  {nothingRecorded && <div>No set recorded yet.</div>}
+                  {!nothingRecorded && noWeightRows.length > 0 && <div>{rowList(noWeightRows)}: no weight.</div>}
                   {noRepsRows.length > 0 && <div>{rowList(noRepsRows)}: no reps.</div>}
+                  {untouchedRows.length > 0 && (
+                    <div>{rowList(untouchedRows)}: copied (last session or Fill sets), not changed and not confirmed with ✓.</div>
+                  )}
                 </div>
                 <div className="flex gap-2">
                   <button onClick={closeWarn} className="flex-1 py-1.5 rounded-lg bg-amber-500 text-neutral-950 text-xs font-medium">Go back</button>
                   <button onClick={() => markDone(true)} className="flex-1 py-1.5 rounded-lg border border-amber-700 text-amber-200 text-xs">Finish anyway</button>
                 </div>
-                {noWeightRows.length > 0 && <div className="text-[11px] text-amber-400/80">"Finish anyway" removes the rows with no weight.</div>}
+                <div className="text-[11px] text-amber-400/80">
+                  {nothingRecorded
+                    ? '"Finish anyway" closes the exercise. Nothing will be saved for it.'
+                    : noWeightRows.length > 0
+                      ? '"Finish anyway" removes the rows with no weight and saves the other rows as they are.'
+                      : '"Finish anyway" saves the rows as they are.'}
+                </div>
               </div>
             )}
             {ex.setup && !openKeys[entry.key] && (
@@ -3267,7 +3284,7 @@ function DataSyncSection({ exercises, programs, logs, setExercises, setPrograms,
         Export to Excel
       </button>
       {status && <p className="text-xs text-teal-400">{status}</p>}
-      <p className="text-[11px] text-neutral-600 text-center pt-1">Iron Ledger version 60 (Nov 15, 2026)</p>
+      <p className="text-[11px] text-neutral-600 text-center pt-1">Iron Ledger version 61 (Nov 21, 2026)</p>
     </div>
   );
 }
